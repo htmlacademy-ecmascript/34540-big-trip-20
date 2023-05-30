@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Igor Khripunov](https://up.htmlacademy.ru/ecmascript/20/user/34540).
-* Наставник: `Неизвестно`.
+* Наставник: [Gleb Kletskov](https://htmlacademy.ru/profile/id1487865).
 
 ---
 
