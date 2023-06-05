@@ -15,17 +15,11 @@ export default class MainPresenter {
     this.container = container;
     this.tripEventsContainer = this.container.querySelector('.trip-events');
 
-    // Add the "Sort form"
     render(new TripSortView(), this.tripEventsContainer);
-
-    // Add the trip list container <ul>
     render(this.tripEventsListContainer, this.tripEventsContainer);
-
-    // Add the "Edit form"
     render(this.tripFormEditItem, this.tripEventsListContainer.getElement());
     render(new TripFormEditView(), this.tripFormEditItem.getElement());
 
-    // Add trip points
     for (let i = 0; i < POINT_COUNT; i++) {
       const tripEventsListContainerItem = new TripListContainerItemView();
 
