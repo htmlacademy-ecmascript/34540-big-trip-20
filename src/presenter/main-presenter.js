@@ -11,20 +11,25 @@ export default class MainPresenter {
   tripEventsListContainer = new TripListContainerView();
   tripFormEditItem = new TripListContainerItemView();
 
-  init = (container) => {
-    this.container = container;
-    this.tripEventsContainer = this.container.querySelector('.trip-events');
+  constructor({mainContainer, pointsModel}) {
+    this.mainContainer = mainContainer;
+    this.pointsModel = pointsModel;
+  }
+
+  init = () => {
+    this.tripEventsContainer = this.mainContainer.querySelector('.trip-events');
+    this.tripPoints = [...this.pointsModel.getPoints()];
 
     render(new TripSortView(), this.tripEventsContainer);
     render(this.tripEventsListContainer, this.tripEventsContainer);
     render(this.tripFormEditItem, this.tripEventsListContainer.getElement());
     render(new TripFormEditView(), this.tripFormEditItem.getElement());
 
-    for (let i = 0; i < POINT_COUNT; i++) {
+    for (let i = 0; i < this.tripPoints.length; i++) {
       const tripEventsListContainerItem = new TripListContainerItemView();
 
       render(tripEventsListContainerItem, this.tripEventsListContainer.getElement());
-      render(new TripPointView(), tripEventsListContainerItem.getElement());
+      render(new TripPointView({point: this.tripPoints[i]}), tripEventsListContainerItem.getElement());
     }
   };
 }
