@@ -1,5 +1,4 @@
 import {render} from '../render.js';
-import {POINT_COUNT} from '../const.js';
 
 import TripSortView from '../view/main/trip-sort-view.js';
 import TripListContainerView from '../view/main/trip-list-container-view.js';

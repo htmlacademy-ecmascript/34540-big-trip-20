@@ -1,19 +1,39 @@
 import {createElement} from '../../render.js';
+import {humanizeDate} from '../../utils.js';
+import {DATE_FORMAT} from '../../const.js';
+import dayjs from "dayjs";
 
-const createTripPointTemplate = () => (
-  `<div class="event">
-    <time class="event__date" datetime="2019-03-18">MAR 18</time>
+const createTripPointTemplate = (point) => {
+  const {dateFrom, dateTo} = point;
+  const dateFromFull = humanizeDate(dateFrom, DATE_FORMAT.dateFull);
+  const dateFromShort = humanizeDate(dateFrom, DATE_FORMAT.dateShort);
+  const dateToFull = humanizeDate(dateTo, DATE_FORMAT.dateFull);
+  const timeFrom = humanizeDate(dateFrom, DATE_FORMAT.time);
+  const timeTo = humanizeDate(dateTo, DATE_FORMAT.time);
+
+  const getTimeDifference = () => {
+    const from = dayjs(dateFrom);
+    const to = dayjs(dateTo);
+    const hoursDifference = to.diff(from, 'h');
+    const minutesDifference = to.diff(from, 'minute');
+
+    return minutesDifference > 60 ? `${hoursDifference}H ${minutesDifference - hoursDifference * 60}M` : `${minutesDifference}M`;
+  };
+
+  return (
+    `<div class="event">
+    <time class="event__date" datetime="${dateFromFull}">${dateFromShort}</time>
     <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="">
     </div>
     <h3 class="event__title">Taxi Amsterdam</h3>
     <div class="event__schedule">
         <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-18T10:30">10:30</time>
+            <time class="event__start-time" datetime="${dateFromFull}T${timeFrom}">${timeFrom}</time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-18T11:00">11:00</time>
+            <time class="event__end-time" datetime="${dateToFull}T${timeTo}">${timeTo}</time>
         </p>
-        <p class="event__duration">30M</p>
+        <p class="event__duration">${getTimeDifference()}</p>
     </div>
     <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">20</span>
@@ -36,11 +56,16 @@ const createTripPointTemplate = () => (
         <span class="visually-hidden">Open event</span>
     </button>
   </div>`
-);
+  );
+};
 
 export default class TripPointView {
+  constructor({point}) {
+    this.point = point;
+  }
+
   getTemplate() {
-    return createTripPointTemplate();
+    return createTripPointTemplate(this.point);
   }
 
   getElement() {
