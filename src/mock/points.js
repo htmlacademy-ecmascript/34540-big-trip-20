@@ -7,7 +7,7 @@ const mockPoints = [
     dateFrom: new Date('2023-06-15 05:00:00'),
     dateTo: new Date('2023-06-15 08:00:00'),
     destination: getRandomArrayElement(POINT_DESTINATIONS),
-    isFavorite: false,
+    isFavorite: true,
     offers: [
       {
         title: 'Some title 1',
@@ -61,13 +61,8 @@ const mockPoints = [
     dateFrom: new Date('2023-07-20 12:00:00'),
     dateTo: new Date('2023-07-20 14:45:00'),
     destination: getRandomArrayElement(POINT_DESTINATIONS),
-    isFavorite: false,
-    offers: [
-      {
-        title: 'One more title',
-        price: 99
-      }
-    ],
+    isFavorite: true,
+    offers: [],
     type: getRandomArrayElement(POINT_TYPES)
   }
 ];
