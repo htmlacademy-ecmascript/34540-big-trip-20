@@ -1,15 +1,15 @@
 import HeaderPresenter from './presenter/header-presenter.js';
 import MainPresenter from './presenter/main-presenter.js';
-import PointsModel from './model/points-model.js';
+import TripsModel from './model/trips-model.js';
 
 const $siteHeaderElement = document.querySelector('.page-header');
 const $siteMainElement = document.querySelector('.page-main');
 
-const pointsModel = new PointsModel();
+const tripsModel = new TripsModel();
 const headerPresenter = new HeaderPresenter();
 const mainPresenter = new MainPresenter({
   mainContainer: $siteMainElement,
-  pointsModel
+  tripsModel
 });
 
 

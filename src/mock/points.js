@@ -32,11 +32,11 @@ const mockPoints = [
     isFavorite: false,
     offers: [
       {
-        title: 'Some title 1',
+        title: 'Some title 1.1',
         price: 5
       },
       {
-        title: 'Some title 2',
+        title: 'Some title 2.1',
         price: 10
       }
     ],

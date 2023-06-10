@@ -58,4 +58,7 @@ const mockDestinations = [
   }
 ];
 
+const getDestinations = () => mockDestinations;
+
+export {getDestinations};
 
