@@ -6,11 +6,11 @@ import duration from 'dayjs/plugin/duration';
 
 dayjs.extend(duration);
 
-const createTripPointOffersTemplate = (offers) => (
+const createTripPointOffersTemplate = (pointOffers) => (
   `<h4 class="visually-hidden">Offers:</h4>
 
-    ${offers.length > 1 ? `<ul class="event__selected-offers">
-        ${offers.map(({title, price}) => `<li class="event__offer">
+    ${pointOffers.length > 1 ? `<ul class="event__selected-offers">
+        ${pointOffers.map(({title, price}) => `<li class="event__offer">
               <span class="event__offer-title">${title}</span>
               &plus;&euro;&nbsp;
               <span class="event__offer-price">${price}</span>
@@ -18,7 +18,7 @@ const createTripPointOffersTemplate = (offers) => (
         </ul>` : ''}`
 );
 
-const createTripPointTemplate = (point, destination, offers) => {
+const createTripPointTemplate = (point, pointDestination, pointOffers) => {
   const {dateFrom, dateTo, basePrice, isFavorite, type} = point;
   const dateFromFull = humanizeDate(dateFrom, DATE_FORMAT.dateFull);
   const dateFromShort = humanizeDate(dateFrom, DATE_FORMAT.dateShort);
@@ -47,7 +47,7 @@ const createTripPointTemplate = (point, destination, offers) => {
 
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
 
-  const pointOffers = createTripPointOffersTemplate(offers);
+  const pointOffersData = createTripPointOffersTemplate(pointOffers);
 
   return (
     `<div class="event">
@@ -55,7 +55,7 @@ const createTripPointTemplate = (point, destination, offers) => {
       <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="${type}">
       </div>
-      <h3 class="event__title">${destination.name}</h3>
+      <h3 class="event__title">${pointDestination.name}</h3>
       <div class="event__schedule">
           <p class="event__time">
               <time class="event__start-time" datetime="${dateFromFull}T${timeFrom}">${timeFrom}</time>
@@ -67,7 +67,7 @@ const createTripPointTemplate = (point, destination, offers) => {
       <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
       </p>
-      ${pointOffers}
+      ${pointOffersData}
       <button class="event__favorite-btn ${favoriteClassName}" type="button">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -82,15 +82,15 @@ const createTripPointTemplate = (point, destination, offers) => {
 };
 
 export default class TripPointView {
-  constructor({point, destination, offers}) {
+  constructor({point, pointDestination, pointOffers}) {
     this.point = point;
-    this.destination = destination;
-    this.offers = offers;
+    this.pointDestination = pointDestination;
+    this.pointOffers = pointOffers;
   }
 
   getTemplate() {
     //console.log(this.destination);
-    return createTripPointTemplate(this.point, this.destination, this.offers);
+    return createTripPointTemplate(this.point, this.pointDestination, this.pointOffers);
   }
 
   getElement() {

@@ -20,17 +20,18 @@ const createTripFormDestinationsListTemplate = (tripDestinations) => (
   </datalist>`
 );
 
-const createTripFormOffersListTemplate = (type, tripOffers) => {
-  const offersByType = tripOffers.find((offer) => offer.type === type).offers;
+const createTripFormOffersListTemplate = (point, tripOffers) => {
+  const offersByType = tripOffers.find((offer) => offer.type === point.type).offers;
 
   return (
     `${offersByType.length > 0 ? `<section class="event__section event__section--offers">
         <h3 class="event__section-title event__section-title--offers">Offers</h3>
 
         <div class="event__available-offers">
-          ${offersByType.map(({title, price}) => `
+          ${offersByType.map(({id, title, price}) => `
           <div class="event__offer-selector">
-            <input class="event__offer-checkbox visually-hidden" id="event-offer-${type}-1" type="checkbox" name="event-offer-${type}">
+            <input class="event__offer-checkbox visually-hidden" id="event-offer-${point.type}-1" type="checkbox" name="event-offer-${point.type}"
+                ${point.offers.includes(id) ? 'checked' : ''}>
             <label class="event__offer-label" for="event-offer-luggage-1">
                 <span class="event__offer-title">${title}</span>
                 &plus;&euro;&nbsp;
@@ -44,12 +45,12 @@ const createTripFormOffersListTemplate = (type, tripOffers) => {
 
 const createTripFormEditTemplate = (point, pointDestination, tripOffers, tripDestinations) => {
   const {type, basePrice} = point;
-  const {name, description} = pointDestination;
+  const {name = '', description = ''} = pointDestination;
   const calendarDateFrom = humanizeDate(point.dateFrom, DATE_FORMAT.dateTime);
   const calendarDateTo = humanizeDate(point.dateTo, DATE_FORMAT.dateTime);
   const typesGroup = createTripFormTypesGroupTemplate(tripOffers);
   const destinationsList = createTripFormDestinationsListTemplate(tripDestinations);
-  const offersList = createTripFormOffersListTemplate(type, tripOffers);
+  const offersList = createTripFormOffersListTemplate(point, tripOffers);
 
   return (
     `<form class="event event--edit" action="#" method="post">
@@ -59,7 +60,7 @@ const createTripFormEditTemplate = (point, pointDestination, tripOffers, tripDes
                   <span class="visually-hidden">Choose event type</span>
                   <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
               </label>
-              <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+              <input class="event__type-toggle visually-hidden" id="event-type-toggle-1" type="checkbox">
 
               <div class="event__type-list">
                   ${typesGroup}
@@ -114,7 +115,7 @@ const createTripFormEditTemplate = (point, pointDestination, tripOffers, tripDes
 export default class TripFormView {
   constructor({point = POINT_EMPTY, pointDestination, tripOffers, tripDestinations}) {
     this.point = point;
-    this.pointDestination = pointDestination;
+    this.pointDestination = pointDestination ? pointDestination : POINT_EMPTY.destination;
     this.tripOffers = tripOffers;
     this.tripDestinations = tripDestinations;
   }

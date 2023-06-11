@@ -37,8 +37,8 @@ export default class MainPresenter {
       render(tripEventsListContainerItem, this.tripEventsListContainer.getElement());
       render(new TripPointView({
         point: this.tripPoints[i],
-        destination: this.tripsModel.getDestinationById(this.tripPoints[i].destination),
-        offers: this.tripsModel.getOffersById(this.tripPoints[i].type, this.tripPoints[i].offers)
+        pointDestination: this.tripsModel.getDestinationById(this.tripPoints[i].destination),
+        pointOffers: this.tripsModel.getOffersById(this.tripPoints[i].type, this.tripPoints[i].offers)
       }), tripEventsListContainerItem.getElement());
     }
   };
