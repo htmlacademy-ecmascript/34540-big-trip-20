@@ -10,7 +10,6 @@ const createTripPointOffersTemplate = (offers) => (
   `<h4 class="visually-hidden">Offers:</h4>
 
     ${offers.length > 1 ? `<ul class="event__selected-offers">
-
         ${offers.map(({title, price}) => `<li class="event__offer">
               <span class="event__offer-title">${title}</span>
               &plus;&euro;&nbsp;
@@ -19,8 +18,8 @@ const createTripPointOffersTemplate = (offers) => (
         </ul>` : ''}`
 );
 
-const createTripPointTemplate = (point) => {
-  const {destination, dateFrom, dateTo, basePrice, isFavorite, offers, type} = point;
+const createTripPointTemplate = (point, destination, offers) => {
+  const {dateFrom, dateTo, basePrice, isFavorite, type} = point;
   const dateFromFull = humanizeDate(dateFrom, DATE_FORMAT.dateFull);
   const dateFromShort = humanizeDate(dateFrom, DATE_FORMAT.dateShort);
   const dateToFull = humanizeDate(dateTo, DATE_FORMAT.dateFull);
@@ -56,7 +55,7 @@ const createTripPointTemplate = (point) => {
       <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="${type}">
       </div>
-      <h3 class="event__title">${destination}</h3>
+      <h3 class="event__title">${destination.name}</h3>
       <div class="event__schedule">
           <p class="event__time">
               <time class="event__start-time" datetime="${dateFromFull}T${timeFrom}">${timeFrom}</time>
@@ -83,12 +82,15 @@ const createTripPointTemplate = (point) => {
 };
 
 export default class TripPointView {
-  constructor({point}) {
+  constructor({point, destination, offers}) {
     this.point = point;
+    this.destination = destination;
+    this.offers = offers;
   }
 
   getTemplate() {
-    return createTripPointTemplate(this.point);
+    //console.log(this.destination);
+    return createTripPointTemplate(this.point, this.destination, this.offers);
   }
 
   getElement() {

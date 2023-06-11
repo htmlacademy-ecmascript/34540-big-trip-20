@@ -1,8 +1,4 @@
-const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-
-const POINT_DESTINATIONS = ['Serbia', 'Chamonix', 'Geneva', 'Armenia', 'Russia', 'Amsterdam'];
-
-const POINT_COUNT = 3;
+const POINT_COUNT = 10;
 
 const DATE_FORMAT = {
   dateShort: 'MMM D',
@@ -10,4 +6,4 @@ const DATE_FORMAT = {
   time: 'HH:mm'
 };
 
-export {POINT_COUNT, POINT_TYPES, POINT_DESTINATIONS, DATE_FORMAT};
+export {POINT_COUNT, DATE_FORMAT};
