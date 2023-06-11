@@ -26,7 +26,7 @@ export default class MainPresenter {
     render(this.tripFormEditItem, this.tripEventsListContainer.getElement());
     render(new TripFormView({
       point: this.tripPoints[1],
-      pointDestinations: this.tripsModel.getDestinationById(this.tripPoints[1].destination),
+      pointDestination: this.tripsModel.getDestinationById(this.tripPoints[1].destination),
       tripOffers: this.tripOffers,
       tripDestinations: this.tripDestinations
     }), this.tripFormEditItem.getElement());
