@@ -11,15 +11,21 @@ const POINT_EMPTY = {
   offers: []
 };
 
-const DATE_FORMAT = {
-  dateTime: 'MM/DD/YY HH:mm',
-  dateShort: 'MMM D',
-  dateFull: 'YYYY-MM-DD',
-  time: 'HH:mm'
+const DateFormat = {
+  DATE_TIME: 'MM/DD/YY HH:mm',
+  DATE_SHORT: 'MMM D',
+  DATE_FULL: 'YYYY-MM-DD',
+  TIME: 'HH:mm'
+};
+
+const ETime = {
+  MsInHour: 60 * 60 * 1000,
+  MsInDay: 60 * 60 * 1000 * 24,
 };
 
 export {
   POINT_COUNT,
-  DATE_FORMAT,
-  POINT_EMPTY
+  POINT_EMPTY,
+  DateFormat,
+  ETime
 };

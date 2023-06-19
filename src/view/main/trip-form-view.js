@@ -1,6 +1,6 @@
 import {createElement} from '../../render.js';
 import {capitalizeFirstLetter, humanizeDate} from '../../utils.js';
-import {POINT_EMPTY, DATE_FORMAT} from '../../const.js';
+import {POINT_EMPTY, DateFormat} from '../../const.js';
 
 const createTripFormTypesGroupTemplate = (tripOffers) => (
   `<fieldset class="event__type-group">
@@ -24,7 +24,7 @@ const createTripFormOffersListTemplate = (point, tripOffers) => {
   const offersByType = tripOffers.find((offer) => offer.type === point.type).offers;
 
   return (
-    `${offersByType.length > 0 ? `<section class="event__section event__section--offers">
+    `${offersByType.length ? `<section class="event__section event__section--offers">
         <h3 class="event__section-title event__section-title--offers">Offers</h3>
 
         <div class="event__available-offers">
@@ -46,8 +46,8 @@ const createTripFormOffersListTemplate = (point, tripOffers) => {
 const createTripFormEditTemplate = (point, pointDestination, tripOffers, tripDestinations) => {
   const {type, basePrice} = point;
   const {name = '', description = ''} = pointDestination;
-  const calendarDateFrom = humanizeDate(point.dateFrom, DATE_FORMAT.dateTime);
-  const calendarDateTo = humanizeDate(point.dateTo, DATE_FORMAT.dateTime);
+  const calendarDateFrom = humanizeDate(point.dateFrom, DateFormat.DATE_TIME);
+  const calendarDateTo = humanizeDate(point.dateTo, DateFormat.DATE_TIME);
   const typesGroup = createTripFormTypesGroupTemplate(tripOffers);
   const destinationsList = createTripFormDestinationsListTemplate(tripDestinations);
   const offersList = createTripFormOffersListTemplate(point, tripOffers);
