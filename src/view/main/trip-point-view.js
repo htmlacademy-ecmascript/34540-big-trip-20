@@ -1,4 +1,4 @@
-import {createElement} from '../../render.js';
+import AbstractView from '../../framework/view/abstract-view.js';
 import {humanizeDate} from '../../utils.js';
 import {DateFormat, ETime} from '../../const.js';
 import dayjs from 'dayjs';
@@ -81,27 +81,23 @@ const createTripPointTemplate = (point, pointDestination, pointOffers) => {
   );
 };
 
-export default class TripPointView {
+export default class TripPointView extends AbstractView {
+  #point = null;
+  #pointDestination = null;
+  #pointOffers = null;
+
   constructor({point, pointDestination, pointOffers}) {
-    this.point = point;
-    this.pointDestination = pointDestination;
-    this.pointOffers = pointOffers;
+    super();
+    this.#point = point;
+    this.#pointDestination = pointDestination;
+    this.#pointOffers = pointOffers;
   }
 
-  getTemplate() {
-    //console.log(this.destination);
-    return createTripPointTemplate(this.point, this.pointDestination, this.pointOffers);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createTripPointTemplate(
+      this.#point,
+      this.#pointDestination,
+      this.#pointOffers
+    );
   }
 }

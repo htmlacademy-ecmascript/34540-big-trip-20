@@ -1,4 +1,4 @@
-import {createElement} from '../../render.js';
+import AbstractView from '../../framework/view/abstract-view.js';
 import {capitalizeFirstLetter, humanizeDate} from '../../utils.js';
 import {POINT_EMPTY, DateFormat} from '../../const.js';
 
@@ -112,32 +112,26 @@ const createTripFormEditTemplate = (point, pointDestination, tripOffers, tripDes
   );
 };
 
-export default class TripFormView {
+export default class TripFormView extends AbstractView {
+  #point = null;
+  #pointDestination = null;
+  #tripOffers = null;
+  #tripDestinations = null;
+
   constructor({point = POINT_EMPTY, pointDestination, tripOffers, tripDestinations}) {
-    this.point = point;
-    this.pointDestination = pointDestination ? pointDestination : POINT_EMPTY.destination;
-    this.tripOffers = tripOffers;
-    this.tripDestinations = tripDestinations;
+    super();
+    this.#point = point;
+    this.#pointDestination = pointDestination ? pointDestination : POINT_EMPTY.destination;
+    this.#tripOffers = tripOffers;
+    this.#tripDestinations = tripDestinations;
   }
 
-  getTemplate() {
+  get template() {
     return createTripFormEditTemplate(
-      this.point,
-      this.pointDestination,
-      this.tripOffers,
-      this.tripDestinations
+      this.#point,
+      this.#pointDestination,
+      this.#tripOffers,
+      this.#tripDestinations
     );
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

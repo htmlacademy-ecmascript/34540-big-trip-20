@@ -1,4 +1,4 @@
-import {render} from '../render.js';
+import {render} from '../framework/render.js';
 
 import TripSortView from '../view/main/trip-sort-view.js';
 import TripListContainerView from '../view/main/trip-list-container-view.js';
@@ -23,23 +23,23 @@ export default class MainPresenter {
 
     render(new TripSortView(), this.tripEventsContainer);
     render(this.tripEventsListContainer, this.tripEventsContainer);
-    render(this.tripFormEditItem, this.tripEventsListContainer.getElement());
+    render(this.tripFormEditItem, this.tripEventsListContainer.element);
     render(new TripFormView({
       point: this.tripPoints[1],
       pointDestination: this.tripsModel.getDestinationById(this.tripPoints[1].destination),
       tripOffers: this.tripOffers,
       tripDestinations: this.tripDestinations
-    }), this.tripFormEditItem.getElement());
+    }), this.tripFormEditItem.element);
 
     for (let i = 0; i < this.tripPoints.length; i++) {
       const tripEventsListContainerItem = new TripListContainerItemView();
 
-      render(tripEventsListContainerItem, this.tripEventsListContainer.getElement());
+      render(tripEventsListContainerItem, this.tripEventsListContainer.element);
       render(new TripPointView({
         point: this.tripPoints[i],
         pointDestination: this.tripsModel.getDestinationById(this.tripPoints[i].destination),
         pointOffers: this.tripsModel.getOffersById(this.tripPoints[i].type, this.tripPoints[i].offers)
-      }), tripEventsListContainerItem.getElement());
+      }), tripEventsListContainerItem.element);
     }
   };
 }
