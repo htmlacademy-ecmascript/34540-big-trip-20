@@ -6,12 +6,13 @@ const $siteHeaderElement = document.querySelector('.page-header');
 const $siteMainElement = document.querySelector('.page-main');
 
 const tripsModel = new TripsModel();
-const headerPresenter = new HeaderPresenter();
+const headerPresenter = new HeaderPresenter({
+  headerContainer: $siteHeaderElement
+});
 const mainPresenter = new MainPresenter({
   mainContainer: $siteMainElement,
   tripsModel
 });
 
-
-headerPresenter.init($siteHeaderElement);
+headerPresenter.init();
 mainPresenter.init();
