@@ -13,8 +13,8 @@ export default class HeaderPresenter {
     this.#container = headerContainer;
   }
 
-  init = () => {
+  init() {
     render(this.#tripInfo, this.#container.querySelector('.trip-main'), RenderPosition.AFTERBEGIN);
     render(this.#tripFilters, this.#container.querySelector('.trip-controls__filters'));
-  };
+  }
 }

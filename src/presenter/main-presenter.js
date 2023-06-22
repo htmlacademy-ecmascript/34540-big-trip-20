@@ -18,7 +18,7 @@ export default class MainPresenter {
     this.#tripsModel = tripsModel;
   }
 
-  init = () => {
+  init() {
     this.tripEventsContainer = this.#mainContainer.querySelector('.trip-events');
     this.tripPoints = [...this.#tripsModel.points];
     this.tripOffers = [...this.#tripsModel.offers];
@@ -35,14 +35,18 @@ export default class MainPresenter {
     }), this.#tripFormEditItem.element);
 
     for (let i = 0; i < this.tripPoints.length; i++) {
-      const tripEventsListContainerItem = new TripListContainerItemView();
-
-      render(tripEventsListContainerItem, this.#tripEventsListContainer.element);
-      render(new TripPointView({
+      this.#renderPoint({
         point: this.tripPoints[i],
         pointDestination: this.#tripsModel.getDestinationById(this.tripPoints[i].destination),
         pointOffers: this.#tripsModel.getOffersById(this.tripPoints[i].type, this.tripPoints[i].offers)
-      }), tripEventsListContainerItem.element);
+      });
     }
-  };
+  }
+
+  #renderPoint(pointInfo){
+    const tripEventsListContainerItem = new TripListContainerItemView();
+
+    render(tripEventsListContainerItem, this.#tripEventsListContainer.element);
+    render(new TripPointView(pointInfo), tripEventsListContainerItem.element);
+  }
 }
