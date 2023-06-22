@@ -1,6 +1,6 @@
-import {createElement} from '../../render.js';
+import AbstractView from '../../framework/view/abstract-view.js';
 import {humanizeDate} from '../../utils.js';
-import {DATE_FORMAT} from '../../const.js';
+import {DateFormat, ETime} from '../../const.js';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
@@ -20,24 +20,24 @@ const createTripPointOffersTemplate = (pointOffers) => (
 
 const createTripPointTemplate = (point, pointDestination, pointOffers) => {
   const {dateFrom, dateTo, basePrice, isFavorite, type} = point;
-  const dateFromFull = humanizeDate(dateFrom, DATE_FORMAT.dateFull);
-  const dateFromShort = humanizeDate(dateFrom, DATE_FORMAT.dateShort);
-  const dateToFull = humanizeDate(dateTo, DATE_FORMAT.dateFull);
-  const timeFrom = humanizeDate(dateFrom, DATE_FORMAT.time);
-  const timeTo = humanizeDate(dateTo, DATE_FORMAT.time);
+  const dateFromFull = humanizeDate(dateFrom, DateFormat.DATE_FULL);
+  const dateFromShort = humanizeDate(dateFrom, DateFormat.DATE_SHORT);
+  const dateToFull = humanizeDate(dateTo, DateFormat.DATE_FULL);
+  const timeFrom = humanizeDate(dateFrom, DateFormat.TIME);
+  const timeTo = humanizeDate(dateTo, DateFormat.TIME);
 
   const getTimeDifference = () => {
     const timeDifference = dayjs(dateTo).diff(dayjs(dateFrom)); // in milliseconds
     let pointDuration = 0;
 
     switch (true) {
-      case (timeDifference < 60 * 60 * 1000): // < 1 hour
+      case (timeDifference < ETime.MsInHour): // < 1 hour
         pointDuration = dayjs.duration(timeDifference).format('mm[M]');
         break;
-      case (timeDifference >= 60 * 60 * 1000): // >= 1 hour
+      case (timeDifference >= ETime.MsInHour): // >= 1 hour
         pointDuration = dayjs.duration(timeDifference).format('HH[H] mm[M]');
         break;
-      case (timeDifference >= 60 * 60 * 1000 * 24): // >= 1 day
+      case (timeDifference >= ETime.MsInDay): // >= 1 day
         pointDuration = dayjs.duration(timeDifference).format('DD[D] HH[H] mm[M]');
         break;
     }
@@ -81,27 +81,32 @@ const createTripPointTemplate = (point, pointDestination, pointOffers) => {
   );
 };
 
-export default class TripPointView {
-  constructor({point, pointDestination, pointOffers}) {
-    this.point = point;
-    this.pointDestination = pointDestination;
-    this.pointOffers = pointOffers;
+export default class TripPointView extends AbstractView {
+  #point = null;
+  #pointDestination = null;
+  #pointOffers = null;
+  #handleEditClick = null;
+
+  constructor({pointInfo, onEditClick}) {
+    super();
+    this.#point = pointInfo.point;
+    this.#pointDestination = pointInfo.pointDestination;
+    this.#pointOffers = pointInfo.pointOffers;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
-  getTemplate() {
-    //console.log(this.destination);
-    return createTripPointTemplate(this.point, this.pointDestination, this.pointOffers);
+  get template() {
+    return createTripPointTemplate(
+      this.#point,
+      this.#pointDestination,
+      this.#pointOffers
+    );
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }
