@@ -1,6 +1,6 @@
 import AbstractView from '../../framework/view/abstract-view.js';
 import {humanizeDate} from '../../utils.js';
-import {DateFormat, ETime} from '../../const.js';
+import {DateFormat, TimeCalc} from '../../const.js';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
@@ -9,12 +9,15 @@ dayjs.extend(duration);
 const createTripPointOffersTemplate = (pointOffers) => (
   `<h4 class="visually-hidden">Offers:</h4>
 
-    ${pointOffers.length > 1 ? `<ul class="event__selected-offers">
-        ${pointOffers.map(({title, price}) => `<li class="event__offer">
+    ${pointOffers.length ? `<ul class="event__selected-offers">
+        ${pointOffers.reduce((result, {title, price}) => {
+    result += `<li class="event__offer">
               <span class="event__offer-title">${title}</span>
               &plus;&euro;&nbsp;
               <span class="event__offer-price">${price}</span>
-            </li>`).join('')}
+            </li>`;
+    return result;
+  }, '')}
         </ul>` : ''}`
 );
 
@@ -31,13 +34,13 @@ const createTripPointTemplate = (point, pointDestination, pointOffers) => {
     let pointDuration = 0;
 
     switch (true) {
-      case (timeDifference < ETime.MsInHour): // < 1 hour
+      case (timeDifference < TimeCalc.MS_IN_HOUR): // < 1 hour
         pointDuration = dayjs.duration(timeDifference).format('mm[M]');
         break;
-      case (timeDifference >= ETime.MsInHour): // >= 1 hour
+      case (timeDifference >= TimeCalc.MS_IN_HOUR): // >= 1 hour
         pointDuration = dayjs.duration(timeDifference).format('HH[H] mm[M]');
         break;
-      case (timeDifference >= ETime.MsInDay): // >= 1 day
+      case (timeDifference >= TimeCalc.MS_IN_DAY): // >= 1 day
         pointDuration = dayjs.duration(timeDifference).format('DD[D] HH[H] mm[M]');
         break;
     }

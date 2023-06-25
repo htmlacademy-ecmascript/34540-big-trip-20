@@ -18,14 +18,14 @@ const DateFormat = {
   TIME: 'HH:mm'
 };
 
-const ETime = {
-  MsInHour: 60 * 60 * 1000,
-  MsInDay: 60 * 60 * 1000 * 24,
+const TimeCalc = {
+  MS_IN_HOUR: 60 * 60 * 1000,
+  MS_IN_DAY: 60 * 60 * 1000 * 24,
 };
 
 export {
   POINT_COUNT,
   POINT_EMPTY,
   DateFormat,
-  ETime
+  TimeCalc
 };

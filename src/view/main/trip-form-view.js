@@ -6,17 +6,23 @@ const createTripFormTypesGroupTemplate = (tripOffers) => (
   `<fieldset class="event__type-group">
         <legend class="visually-hidden">Event type</legend>
 
-        ${tripOffers.map(({type}) => `<div class="event__type-item">
+        ${tripOffers.reduce((result, {type}) => {
+    result += `<div class="event__type-item">
           <input id="event-type-${type}-1" class="event__type-input visually-hidden" type="radio"
                  name="event-type" value="${type}">
           <label class="event__type-label event__type-label--${type}" for="event-type-${type}-1">${capitalizeFirstLetter(type)}</label>
-      </div>`).join('')}
+      </div>`;
+    return result;
+  }, '')}
    </fieldset>`
 );
 
 const createTripFormDestinationsListTemplate = (tripDestinations) => (
   `<datalist id="destination-list-1">
-    ${tripDestinations.map(({name}) => (`<option value="${name}"></option>`)).join('')}
+    ${tripDestinations.reduce((result, {name}) => {
+    result += `<option value="${name}"></option>`;
+    return result;
+  }, '')}
   </datalist>`
 );
 
@@ -28,8 +34,8 @@ const createTripFormOffersListTemplate = (point, tripOffers) => {
         <h3 class="event__section-title event__section-title--offers">Offers</h3>
 
         <div class="event__available-offers">
-          ${offersByType.map(({id, title, price}) => `
-          <div class="event__offer-selector">
+          ${offersByType.reduce((result, {id, title, price}) => {
+      result += `<div class="event__offer-selector">
             <input class="event__offer-checkbox visually-hidden" id="event-offer-${point.type}-1" type="checkbox" name="event-offer-${point.type}"
                 ${point.offers.includes(id) ? 'checked' : ''}>
             <label class="event__offer-label" for="event-offer-luggage-1">
@@ -37,7 +43,9 @@ const createTripFormOffersListTemplate = (point, tripOffers) => {
                 &plus;&euro;&nbsp;
                 <span class="event__offer-price">${price}</span>
             </label>
-          </div>`).join('')}
+          </div>`;
+      return result;
+    }, '')}
         </div>
     </section>` : ''}`
   );
@@ -122,8 +130,8 @@ export default class TripFormView extends AbstractView {
 
   constructor({pointInfo, onFormSubmit, onHideClick}) {
     super();
-    this.#point = pointInfo.point ? pointInfo.point : POINT_EMPTY;
-    this.#pointDestination = pointInfo.pointDestination ? pointInfo.pointDestination : POINT_EMPTY.destination;
+    this.#point = pointInfo.point ?? POINT_EMPTY;
+    this.#pointDestination = pointInfo.pointDestination ?? POINT_EMPTY.destination;
     this.#tripOffers = pointInfo.tripOffers;
     this.#tripDestinations = pointInfo.tripDestinations;
     this.#handleHideClick = onHideClick;
