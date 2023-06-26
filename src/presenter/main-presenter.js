@@ -11,7 +11,6 @@ export default class MainPresenter {
   #tripsModel = null;
 
   #tripEventsListContainer = new TripListContainerView();
-  #tripFormEditItem = new TripListContainerItemView();
 
   constructor({mainContainer, tripsModel}) {
     this.#mainContainer = mainContainer;
@@ -24,6 +23,10 @@ export default class MainPresenter {
     this.tripOffers = [...this.#tripsModel.offers];
     this.tripDestinations = [...this.#tripsModel.destinations];
 
+    this.#renderTrip();
+  }
+
+  #renderTrip() {
     render(new TripSortView(), this.tripEventsContainer);
 
     render(this.#tripEventsListContainer, this.tripEventsContainer);

@@ -14,6 +14,10 @@ export default class HeaderPresenter {
   }
 
   init() {
+    this.#renderHeader();
+  }
+
+  #renderHeader() {
     render(this.#tripInfo, this.#container.querySelector('.trip-main'), RenderPosition.AFTERBEGIN);
     render(this.#tripFilters, this.#container.querySelector('.trip-controls__filters'));
   }
