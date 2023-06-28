@@ -23,9 +23,17 @@ const TimeCalc = {
   MS_IN_DAY: 60 * 60 * 1000 * 24,
 };
 
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past'
+};
+
 export {
   POINT_COUNT,
   POINT_EMPTY,
   DateFormat,
-  TimeCalc
+  TimeCalc,
+  FilterType
 };

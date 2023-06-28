@@ -1,5 +1,5 @@
 import AbstractView from '../../framework/view/abstract-view.js';
-import {capitalizeFirstLetter, humanizeDate} from '../../utils.js';
+import {capitalizeFirstLetter, humanizeDate} from '../../utils/common.js';
 import {POINT_EMPTY, DateFormat} from '../../const.js';
 
 const createTripFormTypesGroupTemplate = (tripOffers) => (
