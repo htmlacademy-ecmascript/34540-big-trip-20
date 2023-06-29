@@ -7,7 +7,8 @@ const $siteMainElement = document.querySelector('.page-main');
 
 const tripsModel = new TripsModel();
 const headerPresenter = new HeaderPresenter({
-  headerContainer: $siteHeaderElement
+  headerContainer: $siteHeaderElement,
+  tripsModel
 });
 const mainPresenter = new MainPresenter({
   mainContainer: $siteMainElement,

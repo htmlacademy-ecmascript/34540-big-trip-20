@@ -1,16 +1,18 @@
 import {render, RenderPosition} from '../framework/render.js';
+import {generateFilter} from '../mock/filter.js';
 
 import TripInfoView from '../view/header/trip-info-view.js';
 import TripFiltersView from '../view/header/trip-filters-view.js';
 
 export default class HeaderPresenter {
   #container = null;
+  #tripsModel = null;
+  #filters = null;
 
-  #tripInfo = new TripInfoView();
-  #tripFilters = new TripFiltersView();
-
-  constructor({headerContainer}) {
+  constructor({headerContainer, tripsModel}) {
     this.#container = headerContainer;
+    this.#tripsModel = tripsModel;
+    this.#filters = generateFilter(this.#tripsModel.points);
   }
 
   init() {
@@ -18,7 +20,7 @@ export default class HeaderPresenter {
   }
 
   #renderHeader() {
-    render(this.#tripInfo, this.#container.querySelector('.trip-main'), RenderPosition.AFTERBEGIN);
-    render(this.#tripFilters, this.#container.querySelector('.trip-controls__filters'));
+    render(new TripInfoView(), this.#container.querySelector('.trip-main'), RenderPosition.AFTERBEGIN);
+    render(new TripFiltersView(this.#filters), this.#container.querySelector('.trip-controls__filters'));
   }
 }
