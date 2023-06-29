@@ -16,11 +16,15 @@ export default class HeaderPresenter {
   }
 
   init() {
+    this.tripPoints = [...this.#tripsModel.points];
+
     this.#renderHeader();
   }
 
   #renderHeader() {
-    render(new TripInfoView(), this.#container.querySelector('.trip-main'), RenderPosition.AFTERBEGIN);
-    render(new TripFiltersView(this.#filters), this.#container.querySelector('.trip-controls__filters'));
+    if (this.tripPoints.length > 0) {
+      render(new TripInfoView(), this.#container.querySelector('.trip-main'), RenderPosition.AFTERBEGIN);
+      render(new TripFiltersView(this.#filters), this.#container.querySelector('.trip-controls__filters'));
+    }
   }
 }

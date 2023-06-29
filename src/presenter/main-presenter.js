@@ -5,6 +5,7 @@ import TripListContainerView from '../view/main/trip-list-container-view.js';
 import TripListContainerItemView from '../view/main/trip-list-container-item-view.js';
 import TripPointView from '../view/main/trip-point-view.js';
 import TripFormView from '../view/main/trip-form-view.js';
+import TripListEmptyView from '../view/main/trip-list-empty-view.js';
 
 export default class MainPresenter {
   #mainContainer = null;
@@ -27,6 +28,11 @@ export default class MainPresenter {
   }
 
   #renderTrip() {
+    if (this.tripPoints.length <= 0) {
+      render(new TripListEmptyView(), this.tripEventsContainer);
+      return;
+    }
+
     render(new TripSortView(), this.tripEventsContainer);
 
     render(this.#tripEventsListContainer, this.tripEventsContainer);
