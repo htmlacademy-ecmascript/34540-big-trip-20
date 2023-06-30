@@ -6,16 +6,20 @@ import duration from 'dayjs/plugin/duration';
 
 dayjs.extend(duration);
 
+const createTripPointOfferItem = (title, price) => (
+  `<li class="event__offer">
+      <span class="event__offer-title">${title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${price}</span>
+  </li>`
+);
+
 const createTripPointOffersTemplate = (pointOffers) => (
   `<h4 class="visually-hidden">Offers:</h4>
 
     ${pointOffers.length ? `<ul class="event__selected-offers">
         ${pointOffers.reduce((result, {title, price}) => {
-    result += `<li class="event__offer">
-              <span class="event__offer-title">${title}</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">${price}</span>
-            </li>`;
+    result += createTripPointOfferItem(title, price);
     return result;
   }, '')}
         </ul>` : ''}`
