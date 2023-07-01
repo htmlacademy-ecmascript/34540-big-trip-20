@@ -5,13 +5,13 @@ import TripListContainerView from '../view/main/trip-list-container-view.js';
 import TripListContainerItemView from '../view/main/trip-list-container-item-view.js';
 import TripPointView from '../view/main/trip-point-view.js';
 import TripFormView from '../view/main/trip-form-view.js';
+import TripListEmptyView from '../view/main/trip-list-empty-view.js';
 
 export default class MainPresenter {
   #mainContainer = null;
   #tripsModel = null;
 
   #tripEventsListContainer = new TripListContainerView();
-  #tripFormEditItem = new TripListContainerItemView();
 
   constructor({mainContainer, tripsModel}) {
     this.#mainContainer = mainContainer;
@@ -23,6 +23,15 @@ export default class MainPresenter {
     this.tripPoints = [...this.#tripsModel.points];
     this.tripOffers = [...this.#tripsModel.offers];
     this.tripDestinations = [...this.#tripsModel.destinations];
+
+    this.#renderTrip();
+  }
+
+  #renderTrip() {
+    if (this.tripPoints.length <= 0) {
+      render(new TripListEmptyView(), this.tripEventsContainer);
+      return;
+    }
 
     render(new TripSortView(), this.tripEventsContainer);
 

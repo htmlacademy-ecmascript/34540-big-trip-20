@@ -1,10 +1,10 @@
-import {getRandomPoint} from '../mock/points.js';
+import {getRandomPoint, getPoints} from '../mock/points.js';
 import {generateDestinations} from '../mock/destinations.js';
 import {generateOffers} from '../mock/offers.js';
 import {POINT_COUNT} from '../const.js';
 
 export default class TripsModel {
-  #points = Array.from({length: POINT_COUNT}, getRandomPoint);
+  #points = getPoints().length ? Array.from({length: POINT_COUNT}, getRandomPoint) : [];
   #destinations = generateDestinations();
   #offers = generateOffers();
 
