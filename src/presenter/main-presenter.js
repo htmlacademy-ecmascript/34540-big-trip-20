@@ -28,7 +28,7 @@ export default class MainPresenter {
   }
 
   #renderTrip() {
-    if (this.tripPoints.length <= 0) {
+    if (!this.tripPoints.length) {
       render(new TripListEmptyView(), this.tripEventsContainer);
       return;
     }

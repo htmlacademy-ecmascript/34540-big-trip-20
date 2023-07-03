@@ -35,7 +35,7 @@ export default class HeaderPresenter {
   }
 
   #renderHeader() {
-    if (this.tripPoints.length > 0) {
+    if (this.tripPoints.length) {
       render(new TripInfoView(this.totalPrice), this.#container.querySelector('.trip-main'), RenderPosition.AFTERBEGIN);
       render(new TripFiltersView(this.#filters), this.#container.querySelector('.trip-controls__filters'));
     }
