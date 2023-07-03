@@ -141,12 +141,12 @@ export default class TripFormView extends AbstractView {
   #handleHideClick = null;
   #handleFormSubmit = null;
 
-  constructor({pointInfo, onFormSubmit, onHideClick}) {
+  constructor({pointsInfo, onFormSubmit, onHideClick}) {
     super();
-    this.#point = pointInfo.point ?? POINT_EMPTY;
-    this.#pointDestination = pointInfo.pointDestination ?? POINT_EMPTY.destination;
-    this.#tripOffers = pointInfo.tripOffers;
-    this.#tripDestinations = pointInfo.tripDestinations;
+    this.#point = pointsInfo.point ?? POINT_EMPTY;
+    this.#pointDestination = pointsInfo.pointDestination ?? POINT_EMPTY.destination;
+    this.#tripOffers = pointsInfo.tripOffers;
+    this.#tripDestinations = pointsInfo.tripDestinations;
     this.#handleHideClick = onHideClick;
     this.#handleFormSubmit = onFormSubmit;
 
