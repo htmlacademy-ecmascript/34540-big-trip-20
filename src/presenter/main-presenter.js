@@ -1,21 +1,20 @@
-import {render, RenderPosition, replace, remove} from '../framework/render.js';
+import {render} from '../framework/render.js';
 
 import TripSortView from '../view/main/trip-sort-view.js';
 import TripListContainerView from '../view/main/trip-list-container-view.js';
-import TripListContainerItemView from '../view/main/trip-list-container-item-view.js';
-import TripPointView from '../view/main/trip-point-view.js';
-import TripFormView from '../view/main/trip-form-view.js';
 import TripListEmptyView from '../view/main/trip-list-empty-view.js';
 
 import PointPresenter from './point-presenter.js';
 
 export default class MainPresenter {
-  #tripPointsContainer = null;
-  #tripsModel = null;
   #sortComponent = new TripSortView();
   #noPointsComponent = new TripListEmptyView();
-
   #tripEventsListContainer = new TripListContainerView();
+
+  #tripPointsContainer = null;
+  #tripsModel = null;
+
+  #pointPresenters = new Map();
 
   constructor({mainContainer, tripsModel}) {
     this.#tripPointsContainer = mainContainer.querySelector('.trip-events');
@@ -67,5 +66,11 @@ export default class MainPresenter {
     });
 
     pointPresenter.init(pointInfo);
+    this.#pointPresenters.set(pointInfo.point.id, pointPresenter);
+  }
+
+  #clearTripList() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
   }
 }

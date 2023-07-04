@@ -1,4 +1,4 @@
-import {render, replace} from '../framework/render.js';
+import {render, replace, remove} from '../framework/render.js';
 
 import TripListContainerItemView from '../view/main/trip-list-container-item-view.js';
 import TripPointView from '../view/main/trip-point-view.js';
@@ -24,6 +24,9 @@ export default class PointPresenter {
   init(pointInfo) {
     this.#pointInfo = pointInfo;
 
+    const prevTripPointComponent = this.#tripPointComponent;
+    const prevTripPointEditComponent = this.#tripPointEditComponent;
+
     this.#tripPointComponent = new TripPointView({
       pointInfo: this.#pointInfo,
       onEditClick: this.#onEditClick
@@ -40,16 +43,34 @@ export default class PointPresenter {
       onHideClick: this.#onHideClick
     });
 
-    render(this.#pointListContainerItem, this.#pointListContainer);
-    render(this.#tripPointComponent, this.#pointListContainerItem.element);
+    if (prevTripPointComponent === null || prevTripPointEditComponent === null) {
+      render(this.#pointListContainerItem, this.#pointListContainer);
+      render(this.#tripPointComponent, this.#pointListContainerItem.element);
+      return;
+    }
+
+    if (this.#pointListContainer.contains(prevTripPointComponent.element)) {
+      replace(this.#tripPointComponent, prevTripPointComponent);
+    }
+
+    if (this.#pointListContainer.contains(prevTripPointEditComponent.element)) {
+      replace(this.#tripPointEditComponent, prevTripPointEditComponent);
+    }
+
+    remove(prevTripPointComponent);
+    remove(prevTripPointEditComponent);
   }
 
+  destroy() {
+    remove(this.#tripPointComponent);
+    remove(this.#tripPointEditComponent);
+  }
 
-  #replacePointToForm(){
+  #replacePointToForm() {
     replace(this.#tripPointEditComponent, this.#tripPointComponent);
   }
 
-  #replaceFormToPoint(){
+  #replaceFormToPoint() {
     replace(this.#tripPointComponent, this.#tripPointEditComponent);
   }
 
@@ -61,17 +82,17 @@ export default class PointPresenter {
     }
   };
 
-  #onEditClick = () =>{
+  #onEditClick = () => {
     this.#replacePointToForm();
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  #onFormSubmit = () =>{
+  #onFormSubmit = () => {
     this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  #onHideClick = () =>{
+  #onHideClick = () => {
     this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
