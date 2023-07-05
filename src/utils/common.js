@@ -6,4 +6,11 @@ const humanizeDate = (date, dateFormat = 'MMM D') => date ? dayjs(date).format(d
 
 const capitalizeFirstLetter = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 
-export {getRandomArrayElement, humanizeDate, capitalizeFirstLetter};
+const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
+
+export {
+  getRandomArrayElement,
+  humanizeDate,
+  capitalizeFirstLetter,
+  updateItem
+};

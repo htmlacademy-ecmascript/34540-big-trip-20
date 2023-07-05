@@ -1,4 +1,5 @@
 import {render} from '../framework/render.js';
+import {updateItem} from '../utils/common.js';
 
 import TripSortView from '../view/main/trip-sort-view.js';
 import TripListContainerView from '../view/main/trip-list-container-view.js';
@@ -10,9 +11,12 @@ export default class MainPresenter {
   #sortComponent = new TripSortView();
   #noPointsComponent = new TripListEmptyView();
   #tripEventsListContainer = new TripListContainerView();
-
   #tripPointsContainer = null;
+
   #tripsModel = null;
+  #tripPoints = [];
+  #tripOffers = [];
+  #tripDestinations = [];
 
   #pointPresenters = new Map();
 
@@ -22,15 +26,24 @@ export default class MainPresenter {
   }
 
   init() {
-    this.tripPoints = [...this.#tripsModel.points];
-    this.tripOffers = [...this.#tripsModel.offers];
-    this.tripDestinations = [...this.#tripsModel.destinations];
+    this.#tripPoints = [...this.#tripsModel.points];
+    this.#tripOffers = [...this.#tripsModel.offers];
+    this.#tripDestinations = [...this.#tripsModel.destinations];
 
     this.#renderTrip();
   }
 
+  #onPointChange = (updatedPoint) => {
+    this.#tripPoints = updateItem(this.#tripPoints, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init({
+      point: updatedPoint,
+      pointDestination: this.#tripsModel.getDestinationById(updatedPoint.destination),
+      pointOffers: this.#tripsModel.getOffersById(updatedPoint.type, updatedPoint.offers)
+    });
+  };
+
   #renderTrip() {
-    if (!this.tripPoints.length) {
+    if (!this.#tripPoints.length) {
       this.#renderNoPoints();
       return;
     }
@@ -49,11 +62,11 @@ export default class MainPresenter {
 
   #renderPointsList() {
     render(this.#tripEventsListContainer, this.#tripPointsContainer);
-    for (let i = 0; i < this.tripPoints.length; i++) {
+    for (let i = 0; i < this.#tripPoints.length; i++) {
       this.#renderPoint({
-        point: this.tripPoints[i],
-        pointDestination: this.#tripsModel.getDestinationById(this.tripPoints[i].destination),
-        pointOffers: this.#tripsModel.getOffersById(this.tripPoints[i].type, this.tripPoints[i].offers)
+        point: this.#tripPoints[i],
+        pointDestination: this.#tripsModel.getDestinationById(this.#tripPoints[i].destination),
+        pointOffers: this.#tripsModel.getOffersById(this.#tripPoints[i].type, this.#tripPoints[i].offers)
       });
     }
   }
@@ -61,8 +74,9 @@ export default class MainPresenter {
   #renderPoint(pointInfo) {
     const pointPresenter = new PointPresenter({
       pointListContainer: this.#tripEventsListContainer.element,
-      tripOffers: this.tripOffers,
-      tripDestinations: this.tripDestinations
+      tripOffers: this.#tripOffers,
+      tripDestinations: this.#tripDestinations,
+      onPointChange: this.#onPointChange
     });
 
     pointPresenter.init(pointInfo);

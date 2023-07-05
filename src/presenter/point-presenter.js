@@ -7,18 +7,20 @@ import TripFormView from '../view/main/trip-form-view.js';
 export default class PointPresenter {
   #pointListContainer = null;
   #pointListContainerItem = new TripListContainerItemView();
-
   #tripPointComponent = null;
   #tripPointEditComponent = null;
 
+  #pointInfo = null;
   #tripOffers = [];
   #tripDestinations = [];
-  #pointInfo = null;
 
-  constructor({pointListContainer, tripOffers, tripDestinations}) {
+  #onPointChange = null;
+
+  constructor({pointListContainer, tripOffers, tripDestinations, onPointChange}) {
     this.#pointListContainer = pointListContainer;
     this.#tripOffers = tripOffers;
     this.#tripDestinations = tripDestinations;
+    this.#onPointChange = onPointChange;
   }
 
   init(pointInfo) {
@@ -29,7 +31,8 @@ export default class PointPresenter {
 
     this.#tripPointComponent = new TripPointView({
       pointInfo: this.#pointInfo,
-      onEditClick: this.#onEditClick
+      onEditClick: this.#onEditClick,
+      onFavoriteClick: this.#onFavoriteClick
     });
 
     this.#tripPointEditComponent = new TripFormView({
@@ -80,6 +83,10 @@ export default class PointPresenter {
       this.#replaceFormToPoint();
       document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
+  };
+
+  #onFavoriteClick = () => {
+    this.#onPointChange({...this.#pointInfo.point, isFavorite: !this.#pointInfo.point.isFavorite});
   };
 
   #onEditClick = () => {
