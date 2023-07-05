@@ -4,6 +4,11 @@ import TripListContainerItemView from '../view/main/trip-list-container-item-vie
 import TripPointView from '../view/main/trip-point-view.js';
 import TripFormView from '../view/main/trip-form-view.js';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class PointPresenter {
   #pointListContainer = null;
   #pointListContainerItem = new TripListContainerItemView();
@@ -15,12 +20,15 @@ export default class PointPresenter {
   #tripDestinations = [];
 
   #onPointChange = null;
+  #onModeChange = null;
+  #mode = Mode.DEFAULT;
 
-  constructor({pointListContainer, tripOffers, tripDestinations, onPointChange}) {
+  constructor({pointListContainer, tripOffers, tripDestinations, onPointChange, onModeChange}) {
     this.#pointListContainer = pointListContainer;
     this.#tripOffers = tripOffers;
     this.#tripDestinations = tripDestinations;
     this.#onPointChange = onPointChange;
+    this.#onModeChange = onModeChange;
   }
 
   init(pointInfo) {
@@ -52,16 +60,23 @@ export default class PointPresenter {
       return;
     }
 
-    if (this.#pointListContainer.contains(prevTripPointComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#tripPointComponent, prevTripPointComponent);
     }
 
-    if (this.#pointListContainer.contains(prevTripPointEditComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#tripPointEditComponent, prevTripPointEditComponent);
     }
 
     remove(prevTripPointComponent);
     remove(prevTripPointEditComponent);
+  }
+
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToPoint();
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
+    }
   }
 
   destroy() {
@@ -70,11 +85,14 @@ export default class PointPresenter {
   }
 
   #replacePointToForm() {
+    this.#onModeChange();
     replace(this.#tripPointEditComponent, this.#tripPointComponent);
+    this.#mode = Mode.EDITING;
   }
 
   #replaceFormToPoint() {
     replace(this.#tripPointComponent, this.#tripPointEditComponent);
+    this.#mode = Mode.DEFAULT;
   }
 
   #escKeyDownHandler = (evt) => {
