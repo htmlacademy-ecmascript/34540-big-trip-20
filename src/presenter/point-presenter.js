@@ -54,7 +54,7 @@ export default class PointPresenter {
       onHideClick: this.#onHideClick
     });
 
-    if (prevTripPointComponent === null || prevTripPointEditComponent === null) {
+    if (!prevTripPointComponent || !prevTripPointEditComponent) {
       render(this.#pointListContainerItem, this.#pointListContainer);
       render(this.#tripPointComponent, this.#pointListContainerItem.element);
       return;
