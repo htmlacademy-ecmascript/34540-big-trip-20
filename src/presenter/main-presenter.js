@@ -1,95 +1,95 @@
-import {render, replace} from '../framework/render.js';
+import {render} from '../framework/render.js';
+import {updateItem} from '../utils/common.js';
 
 import TripSortView from '../view/main/trip-sort-view.js';
 import TripListContainerView from '../view/main/trip-list-container-view.js';
-import TripListContainerItemView from '../view/main/trip-list-container-item-view.js';
-import TripPointView from '../view/main/trip-point-view.js';
-import TripFormView from '../view/main/trip-form-view.js';
 import TripListEmptyView from '../view/main/trip-list-empty-view.js';
 
-export default class MainPresenter {
-  #mainContainer = null;
-  #tripsModel = null;
+import PointPresenter from './point-presenter.js';
 
+export default class MainPresenter {
+  #sortComponent = new TripSortView();
+  #noPointsComponent = new TripListEmptyView();
   #tripEventsListContainer = new TripListContainerView();
+  #tripPointsContainer = null;
+
+  #tripsModel = null;
+  #tripPoints = [];
+  #tripOffers = [];
+  #tripDestinations = [];
+
+  #pointPresenters = new Map();
 
   constructor({mainContainer, tripsModel}) {
-    this.#mainContainer = mainContainer;
+    this.#tripPointsContainer = mainContainer.querySelector('.trip-events');
     this.#tripsModel = tripsModel;
   }
 
   init() {
-    this.tripEventsContainer = this.#mainContainer.querySelector('.trip-events');
-    this.tripPoints = [...this.#tripsModel.points];
-    this.tripOffers = [...this.#tripsModel.offers];
-    this.tripDestinations = [...this.#tripsModel.destinations];
+    this.#tripPoints = [...this.#tripsModel.points];
+    this.#tripOffers = [...this.#tripsModel.offers];
+    this.#tripDestinations = [...this.#tripsModel.destinations];
 
     this.#renderTrip();
   }
 
+  #onModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #onPointChange = (updatedPoint) => {
+    this.#tripPoints = updateItem(this.#tripPoints, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init({
+      point: updatedPoint,
+      pointDestination: this.#tripsModel.getDestinationById(updatedPoint.destination),
+      pointOffers: this.#tripsModel.getOffersById(updatedPoint.type, updatedPoint.offers)
+    });
+  };
+
   #renderTrip() {
-    if (this.tripPoints.length <= 0) {
-      render(new TripListEmptyView(), this.tripEventsContainer);
+    if (!this.#tripPoints.length) {
+      this.#renderNoPoints();
       return;
     }
 
-    render(new TripSortView(), this.tripEventsContainer);
+    this.#renderSort();
+    this.#renderPointsList();
+  }
 
-    render(this.#tripEventsListContainer, this.tripEventsContainer);
-    for (let i = 0; i < this.tripPoints.length; i++) {
+  #renderNoPoints() {
+    render(this.#noPointsComponent, this.#tripPointsContainer);
+  }
+
+  #renderSort() {
+    render(this.#sortComponent, this.#tripPointsContainer);
+  }
+
+  #renderPointsList() {
+    render(this.#tripEventsListContainer, this.#tripPointsContainer);
+    for (let i = 0; i < this.#tripPoints.length; i++) {
       this.#renderPoint({
-        point: this.tripPoints[i],
-        pointDestination: this.#tripsModel.getDestinationById(this.tripPoints[i].destination),
-        pointOffers: this.#tripsModel.getOffersById(this.tripPoints[i].type, this.tripPoints[i].offers)
-      }, i);
+        point: this.#tripPoints[i],
+        pointDestination: this.#tripsModel.getDestinationById(this.#tripPoints[i].destination),
+        pointOffers: this.#tripsModel.getOffersById(this.#tripPoints[i].type, this.#tripPoints[i].offers)
+      });
     }
   }
 
-  #renderPoint(pointInfo, index) {
-    const tripEventsListContainerItem = new TripListContainerItemView();
-
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    const tripPointComponent = new TripPointView({
-      pointInfo,
-      onEditClick: () => {
-        replacePointToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
+  #renderPoint(pointInfo) {
+    const pointPresenter = new PointPresenter({
+      pointListContainer: this.#tripEventsListContainer.element,
+      tripOffers: this.#tripOffers,
+      tripDestinations: this.#tripDestinations,
+      onPointChange: this.#onPointChange,
+      onModeChange: this.#onModeChange
     });
 
-    const tripPointEditComponent = new TripFormView({
-      pointInfo: {
-        point: this.tripPoints[index],
-        pointDestination: this.#tripsModel.getDestinationById(this.tripPoints[index].destination),
-        tripOffers: this.tripOffers,
-        tripDestinations: this.tripDestinations
-      },
-      onFormSubmit: () => {
-        replaceFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      },
-      onHideClick: () => {
-        replaceFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    });
+    pointPresenter.init(pointInfo);
+    this.#pointPresenters.set(pointInfo.point.id, pointPresenter);
+  }
 
-    function replacePointToForm() {
-      replace(tripPointEditComponent, tripPointComponent);
-    }
-
-    function replaceFormToPoint() {
-      replace(tripPointComponent, tripPointEditComponent);
-    }
-
-    render(tripEventsListContainerItem, this.#tripEventsListContainer.element);
-    render(tripPointComponent, tripEventsListContainerItem.element);
+  #clearTripList() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
   }
 }

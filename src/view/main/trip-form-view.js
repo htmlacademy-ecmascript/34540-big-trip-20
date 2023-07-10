@@ -138,17 +138,18 @@ export default class TripFormView extends AbstractView {
   #pointDestination = null;
   #tripOffers = null;
   #tripDestinations = null;
-  #handleHideClick = null;
-  #handleFormSubmit = null;
 
-  constructor({pointInfo, onFormSubmit, onHideClick}) {
+  #onHideClick = null;
+  #onFormSubmit = null;
+
+  constructor({pointsInfo, onFormSubmit, onHideClick}) {
     super();
-    this.#point = pointInfo.point ?? POINT_EMPTY;
-    this.#pointDestination = pointInfo.pointDestination ?? POINT_EMPTY.destination;
-    this.#tripOffers = pointInfo.tripOffers;
-    this.#tripDestinations = pointInfo.tripDestinations;
-    this.#handleHideClick = onHideClick;
-    this.#handleFormSubmit = onFormSubmit;
+    this.#point = pointsInfo.point ?? POINT_EMPTY;
+    this.#pointDestination = pointsInfo.pointDestination ?? POINT_EMPTY.destination;
+    this.#tripOffers = pointsInfo.tripOffers;
+    this.#tripDestinations = pointsInfo.tripDestinations;
+    this.#onHideClick = onHideClick;
+    this.#onFormSubmit = onFormSubmit;
 
     this.element.addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#hideClickHandler);
@@ -165,11 +166,11 @@ export default class TripFormView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#onFormSubmit();
   };
 
   #hideClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleHideClick();
+    this.#onHideClick();
   };
 }
