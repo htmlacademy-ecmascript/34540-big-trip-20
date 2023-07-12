@@ -6,8 +6,31 @@ const isPointPresent = (point) => (dayjs().isAfter(point.dateFrom) && dayjs().is
 
 const isPointPast = (point) => dayjs().isAfter(point.dateTo);
 
+const getWeightForNullDate = (dateA, dateB) => {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+};
+
+const sortPointDay = (pointA, pointB) => {
+  const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
+
+  return weight ?? dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+};
+
 export {
   isPointFuture,
   isPointPresent,
-  isPointPast
+  isPointPast,
+  sortPointDay
 };

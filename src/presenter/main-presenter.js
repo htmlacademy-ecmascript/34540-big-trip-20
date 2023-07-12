@@ -1,5 +1,7 @@
 import {render} from '../framework/render.js';
 import {updateItem} from '../utils/common.js';
+import {SortType} from '../const.js';
+import {sortPointDay} from '../utils/point.js';
 
 import TripSortView from '../view/main/trip-sort-view.js';
 import TripListContainerView from '../view/main/trip-list-container-view.js';
@@ -18,6 +20,9 @@ export default class MainPresenter {
   #tripOffers = [];
   #tripDestinations = [];
 
+  #currentSortType = SortType.DAY;
+  #sourcedTripPoints = [];
+
   #pointPresenters = new Map();
 
   constructor({mainContainer, tripsModel}) {
@@ -29,12 +34,21 @@ export default class MainPresenter {
     this.#tripPoints = [...this.#tripsModel.points];
     this.#tripOffers = [...this.#tripsModel.offers];
     this.#tripDestinations = [...this.#tripsModel.destinations];
+    this.#sourcedTripPoints = [...this.#tripsModel.points];
 
+    this.#sortPoints(SortType.DAY);
     this.#renderTrip();
   }
 
   #onSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
 
+    this.#sortPoints(sortType);
+
+    this.#clearTripList();
+    this.#renderPointsList();
   };
 
   #onModeChange = () => {
@@ -43,6 +57,7 @@ export default class MainPresenter {
 
   #onPointChange = (updatedPoint) => {
     this.#tripPoints = updateItem(this.#tripPoints, updatedPoint);
+    this.#sourcedTripPoints = updateItem(this.#sourcedTripPoints, updatedPoint);
     this.#pointPresenters.get(updatedPoint.id).init({
       point: updatedPoint,
       pointDestination: this.#tripsModel.getDestinationById(updatedPoint.destination),
@@ -94,6 +109,26 @@ export default class MainPresenter {
 
     pointPresenter.init(pointInfo);
     this.#pointPresenters.set(pointInfo.point.id, pointPresenter);
+  }
+
+  #sortPoints(sortType) {
+    switch (sortType) {
+      case SortType.DAY:
+        console.log(this.#tripPoints);
+        this.#tripPoints.sort(sortPointDay);
+        console.log(this.#tripPoints);
+        break;
+      case SortType.TIME:
+        //this.#tripPoints.sort(sortTaskUp);
+        break;
+      case SortType.PRICE:
+       // this.#tripPoints.sort(sortTaskDown);
+        break;
+      default:
+        this.#tripPoints = [...this.#sourcedTripPoints];
+    }
+
+    this.#currentSortType = sortType;
   }
 
   #clearTripList() {
