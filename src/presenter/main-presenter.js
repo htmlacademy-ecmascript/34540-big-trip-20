@@ -8,7 +8,7 @@ import TripListEmptyView from '../view/main/trip-list-empty-view.js';
 import PointPresenter from './point-presenter.js';
 
 export default class MainPresenter {
-  #sortComponent = new TripSortView();
+  #sortComponent = null;
   #noPointsComponent = new TripListEmptyView();
   #tripEventsListContainer = new TripListContainerView();
   #tripPointsContainer = null;
@@ -32,6 +32,10 @@ export default class MainPresenter {
 
     this.#renderTrip();
   }
+
+  #onSortTypeChange = (sortType) => {
+
+  };
 
   #onModeChange = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
@@ -61,6 +65,10 @@ export default class MainPresenter {
   }
 
   #renderSort() {
+    this.#sortComponent = new TripSortView({
+      onSortTypeChange: this.#onSortTypeChange
+    });
+
     render(this.#sortComponent, this.#tripPointsContainer);
   }
 
