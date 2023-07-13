@@ -82,6 +82,7 @@ export default class PointPresenter {
   destroy() {
     remove(this.#tripPointComponent);
     remove(this.#tripPointEditComponent);
+    remove(this.#pointListContainerItem);
   }
 
   #replacePointToForm() {

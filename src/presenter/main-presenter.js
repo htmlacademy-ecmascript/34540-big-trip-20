@@ -1,5 +1,7 @@
 import {render} from '../framework/render.js';
 import {updateItem} from '../utils/common.js';
+import {SortType} from '../const.js';
+import {sortPointDay, sortPointTime, sortPointPrice} from '../utils/point.js';
 
 import TripSortView from '../view/main/trip-sort-view.js';
 import TripListContainerView from '../view/main/trip-list-container-view.js';
@@ -8,7 +10,7 @@ import TripListEmptyView from '../view/main/trip-list-empty-view.js';
 import PointPresenter from './point-presenter.js';
 
 export default class MainPresenter {
-  #sortComponent = new TripSortView();
+  #sortComponent = null;
   #noPointsComponent = new TripListEmptyView();
   #tripEventsListContainer = new TripListContainerView();
   #tripPointsContainer = null;
@@ -17,6 +19,9 @@ export default class MainPresenter {
   #tripPoints = [];
   #tripOffers = [];
   #tripDestinations = [];
+
+  #currentSortType = SortType.DAY;
+  #sourcedTripPoints = [];
 
   #pointPresenters = new Map();
 
@@ -29,9 +34,22 @@ export default class MainPresenter {
     this.#tripPoints = [...this.#tripsModel.points];
     this.#tripOffers = [...this.#tripsModel.offers];
     this.#tripDestinations = [...this.#tripsModel.destinations];
+    this.#sourcedTripPoints = [...this.#tripsModel.points];
 
+    this.#sortPoints(SortType.DAY);
     this.#renderTrip();
   }
+
+  #onSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortPoints(sortType);
+
+    this.#clearTripList();
+    this.#renderPointsList();
+  };
 
   #onModeChange = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
@@ -39,6 +57,7 @@ export default class MainPresenter {
 
   #onPointChange = (updatedPoint) => {
     this.#tripPoints = updateItem(this.#tripPoints, updatedPoint);
+    this.#sourcedTripPoints = updateItem(this.#sourcedTripPoints, updatedPoint);
     this.#pointPresenters.get(updatedPoint.id).init({
       point: updatedPoint,
       pointDestination: this.#tripsModel.getDestinationById(updatedPoint.destination),
@@ -61,6 +80,10 @@ export default class MainPresenter {
   }
 
   #renderSort() {
+    this.#sortComponent = new TripSortView({
+      onSortTypeChange: this.#onSortTypeChange
+    });
+
     render(this.#sortComponent, this.#tripPointsContainer);
   }
 
@@ -86,6 +109,24 @@ export default class MainPresenter {
 
     pointPresenter.init(pointInfo);
     this.#pointPresenters.set(pointInfo.point.id, pointPresenter);
+  }
+
+  #sortPoints(sortType) {
+    switch (sortType) {
+      case SortType.DAY:
+        this.#tripPoints.sort(sortPointDay);
+        break;
+      case SortType.TIME:
+        this.#tripPoints.sort(sortPointTime);
+        break;
+      case SortType.PRICE:
+        this.#tripPoints.sort(sortPointPrice);
+        break;
+      default:
+        this.#tripPoints = [...this.#sourcedTripPoints];
+    }
+
+    this.#currentSortType = sortType;
   }
 
   #clearTripList() {
