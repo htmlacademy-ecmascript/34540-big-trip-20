@@ -28,9 +28,12 @@ const sortPointDay = (pointA, pointB) => {
   return weight ?? dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 };
 
+const sortPointPrice = (pointA, pointB) => pointB.basePrice - pointA.basePrice;
+
 export {
   isPointFuture,
   isPointPresent,
   isPointPast,
-  sortPointDay
+  sortPointDay,
+  sortPointPrice
 };
