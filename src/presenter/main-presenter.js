@@ -1,7 +1,7 @@
 import {render} from '../framework/render.js';
 import {updateItem} from '../utils/common.js';
 import {SortType} from '../const.js';
-import {sortPointDay, sortPointPrice} from '../utils/point.js';
+import {sortPointDay, sortPointTime, sortPointPrice} from '../utils/point.js';
 
 import TripSortView from '../view/main/trip-sort-view.js';
 import TripListContainerView from '../view/main/trip-list-container-view.js';
@@ -117,7 +117,7 @@ export default class MainPresenter {
         this.#tripPoints.sort(sortPointDay);
         break;
       case SortType.TIME:
-        //this.#tripPoints.sort(sortTaskUp);
+        this.#tripPoints.sort(sortPointTime);
         break;
       case SortType.PRICE:
         this.#tripPoints.sort(sortPointPrice);

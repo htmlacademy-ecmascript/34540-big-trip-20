@@ -1,4 +1,4 @@
-const POINT_COUNT = 3;
+const POINT_COUNT = 10;
 
 const POINT_EMPTY = {
   id: null,
