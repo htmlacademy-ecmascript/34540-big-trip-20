@@ -41,7 +41,7 @@ const createTripPointTemplate = (point, pointDestination, pointOffers) => {
       case (timeDifference < TimeCalc.MS_IN_HOUR): // < 1 hour
         pointDuration = dayjs.duration(timeDifference).format('mm[M]');
         break;
-      case (timeDifference >= TimeCalc.MS_IN_HOUR): // >= 1 hour
+      case (timeDifference >= TimeCalc.MS_IN_HOUR && timeDifference < TimeCalc.MS_IN_DAY): // >= 1 hour
         pointDuration = dayjs.duration(timeDifference).format('HH[H] mm[M]');
         break;
       case (timeDifference >= TimeCalc.MS_IN_DAY): // >= 1 day
