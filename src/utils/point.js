@@ -7,15 +7,15 @@ const isPointPresent = (point) => (dayjs().isAfter(point.dateFrom) && dayjs().is
 const isPointPast = (point) => dayjs().isAfter(point.dateTo);
 
 const getWeightForNullDate = (dateA, dateB) => {
-  if (dateA === null && dateB === null) {
+  if (!dateA && !dateB) {
     return 0;
   }
 
-  if (dateA === null) {
+  if (!dateA) {
     return 1;
   }
 
-  if (dateB === null) {
+  if (!dateB) {
     return -1;
   }
 
