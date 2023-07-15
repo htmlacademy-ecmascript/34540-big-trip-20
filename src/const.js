@@ -30,10 +30,17 @@ const FilterType = {
   PAST: 'past'
 };
 
+const SortType = {
+  DAY: 'day',
+  TIME: 'time',
+  PRICE: 'price',
+};
+
 export {
   POINT_COUNT,
   POINT_EMPTY,
   DateFormat,
   TimeCalc,
-  FilterType
+  FilterType,
+  SortType
 };
