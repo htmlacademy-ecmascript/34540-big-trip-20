@@ -1,4 +1,4 @@
-import AbstractView from '../../framework/view/abstract-view.js';
+import AbstractStatefulView from '../../framework/view/abstract-stateful-view.js';
 import {capitalizeFirstLetter, humanizeDate} from '../../utils/common.js';
 import {POINT_EMPTY, DateFormat} from '../../const.js';
 
@@ -133,7 +133,7 @@ const createTripFormEditTemplate = (point, pointDestination, tripOffers, tripDes
   );
 };
 
-export default class TripFormView extends AbstractView {
+export default class TripFormView extends AbstractStatefulView {
   #point = null;
   #pointDestination = null;
   #tripOffers = null;
@@ -144,7 +144,7 @@ export default class TripFormView extends AbstractView {
 
   constructor({pointsInfo, onFormSubmit, onHideClick}) {
     super();
-    this.#point = pointsInfo.point ?? POINT_EMPTY;
+    this._setState(pointsInfo.point ? TripFormView.parsePointToState(pointsInfo.point) : TripFormView.parsePointToState(POINT_EMPTY));
     this.#pointDestination = pointsInfo.pointDestination ?? POINT_EMPTY.destination;
     this.#tripOffers = pointsInfo.tripOffers;
     this.#tripDestinations = pointsInfo.tripDestinations;
@@ -157,7 +157,7 @@ export default class TripFormView extends AbstractView {
 
   get template() {
     return createTripFormEditTemplate(
-      this.#point,
+      this._state,
       this.#pointDestination,
       this.#tripOffers,
       this.#tripDestinations
@@ -166,11 +166,21 @@ export default class TripFormView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#onFormSubmit();
+    this.#onFormSubmit(TripFormView.parseStateToPoint(this._state));
   };
 
   #hideClickHandler = (evt) => {
     evt.preventDefault();
     this.#onHideClick();
   };
+
+  static parsePointToState(point) {
+    return {...point};
+  }
+
+  static parseStateToPoint(state) {
+    const point = {...state};
+
+    return point;
+  }
 }
