@@ -37,11 +37,14 @@ const sortPointTime = (pointA, pointB) => {
 
 const sortPointPrice = (pointA, pointB) => pointB.basePrice - pointA.basePrice;
 
+const getOffersByType = (type, offers) => offers.find((offer) => offer.type === type).offers;
+
 export {
   isPointFuture,
   isPointPresent,
   isPointPast,
   sortPointDay,
   sortPointTime,
-  sortPointPrice
+  sortPointPrice,
+  getOffersByType
 };

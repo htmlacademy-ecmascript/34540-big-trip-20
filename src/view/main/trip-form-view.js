@@ -1,11 +1,12 @@
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view.js';
 import {capitalizeFirstLetter, humanizeDate} from '../../utils/common.js';
 import {POINT_EMPTY, DateFormat} from '../../const.js';
+import {getOffersByType} from '../../utils/point.js';
 
 const createTripFormTypesGroupItem = (type) => (
   `<div class="event__type-item">
       <input
-        id="event-type-${type}-1"
+        id="event-type-${type}"
         class="event__type-input visually-hidden"
         type="radio"
         name="event-type"
@@ -13,7 +14,7 @@ const createTripFormTypesGroupItem = (type) => (
       />
       <label
         class="event__type-label event__type-label--${type}"
-        for="event-type-${type}-1">
+        for="event-type-${type}">
             ${capitalizeFirstLetter(type)}
       </label>
     </div>`
@@ -40,7 +41,7 @@ const createTripFormDestinationsListTemplate = (tripDestinations) => (
 );
 
 const createTripFormOffersListTemplate = (point, tripOffers) => {
-  const offersByType = tripOffers.find((offer) => offer.type === point.type).offers;
+  const offersByType = getOffersByType(point.type, tripOffers);
 
   return (
     `${offersByType.length ? `<section class="event__section event__section--offers">
@@ -134,7 +135,6 @@ const createTripFormEditTemplate = (point, pointDestination, tripOffers, tripDes
 };
 
 export default class TripFormView extends AbstractStatefulView {
-  #point = null;
   #pointDestination = null;
   #tripOffers = null;
   #tripDestinations = null;
@@ -151,8 +151,13 @@ export default class TripFormView extends AbstractStatefulView {
     this.#onHideClick = onHideClick;
     this.#onFormSubmit = onFormSubmit;
 
+    this._restoreHandlers();
+  }
+
+  _restoreHandlers() {
     this.element.addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#hideClickHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
   }
 
   get template() {
@@ -174,13 +179,19 @@ export default class TripFormView extends AbstractStatefulView {
     this.#onHideClick();
   };
 
+  #onTypeChange = (evt) => {
+    const selectedType = evt.target.value;
+    this.updateElement({
+      type: selectedType,
+      offers: getOffersByType(selectedType, this.#tripOffers)
+    });
+  };
+
   static parsePointToState(point) {
     return {...point};
   }
 
   static parseStateToPoint(state) {
-    const point = {...state};
-
-    return point;
+    return {...state};
   }
 }
