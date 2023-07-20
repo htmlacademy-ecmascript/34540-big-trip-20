@@ -46,7 +46,6 @@ export default class PointPresenter {
     this.#tripPointEditComponent = new TripFormView({
       pointsInfo: {
         point: this.#pointInfo.point,
-        pointDestination: this.#pointInfo.pointDestination,
         tripOffers: this.#tripOffers,
         tripDestinations: this.#tripDestinations
       },
