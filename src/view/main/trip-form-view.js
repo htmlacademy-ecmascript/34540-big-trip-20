@@ -213,9 +213,15 @@ export default class TripFormView extends AbstractStatefulView {
   #onPriceChange = (evt) =>{
     evt.preventDefault();
     this._setState({
-      basePrice: evt.target.value,
+      basePrice: evt.target.value
     });
   };
+
+  reset(pointInfo) {
+    this.updateElement(
+      TripFormView.parsePointToState(pointInfo.point)
+    );
+  }
 
   static parsePointToState(point) {
     return {...point};
