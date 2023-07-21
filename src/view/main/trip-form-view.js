@@ -65,15 +65,25 @@ const createTripFormOffersListTemplate = (point, tripOffers) => {
   );
 };
 
+const createTripFormDestinationPictures = (pictures) => (
+  `<div class="event__photos-tape">
+    ${pictures.reduce((result, {src, description}) => {
+    result += `<img class="event__photo" src="${src}" alt="${description}">`;
+    return result;
+  }, '')}
+   </div>`
+);
+
 const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
   const {type, basePrice} = point;
   const pointDestination = tripDestinations.find((destination) => destination.id === point.destination);
-  const {name = '', description = ''} = pointDestination;
+  const {name = '', description = '', pictures} = pointDestination;
   const calendarDateFrom = humanizeDate(point.dateFrom, DateFormat.DATE_TIME);
   const calendarDateTo = humanizeDate(point.dateTo, DateFormat.DATE_TIME);
   const typesGroup = createTripFormTypesGroupTemplate(tripOffers);
   const destinationsList = createTripFormDestinationsListTemplate(tripDestinations);
   const offersList = createTripFormOffersListTemplate(point, tripOffers);
+  const picturesList = createTripFormDestinationPictures(pictures);
 
   return (
     `<form class="event event--edit" action="#" method="post">
@@ -129,6 +139,9 @@ const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
            <section class="event__section event__section--destination">
                 <h3 class="event__section-title event__section-title--destination">Destination</h3>
                 <p class="event__destination-description">${description}</p>
+                <div class="event__photos-container">
+                   ${picturesList}
+                </div>
            </section>
       </section>
     </form>`
@@ -189,10 +202,10 @@ export default class TripFormView extends AbstractStatefulView {
 
   #onDestinationChange = (evt) => {
     const selectedDestination = evt.target.value;
-    const getDestinationbyName = this.#tripDestinations.find((destination) => destination.name === selectedDestination.trim()).id;
+    const getDestinationbyName = this.#tripDestinations.find((destination) => destination.name === selectedDestination.trim());
 
     this.updateElement({
-      destination: getDestinationbyName
+      destination: getDestinationbyName ? getDestinationbyName.id : this._state.destination
     });
   };
 
