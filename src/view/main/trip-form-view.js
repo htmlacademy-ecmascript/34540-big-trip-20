@@ -1,11 +1,12 @@
-import AbstractView from '../../framework/view/abstract-view.js';
+import AbstractStatefulView from '../../framework/view/abstract-stateful-view.js';
 import {capitalizeFirstLetter, humanizeDate} from '../../utils/common.js';
 import {POINT_EMPTY, DateFormat} from '../../const.js';
+import {getOffersByType} from '../../utils/point.js';
 
 const createTripFormTypesGroupItem = (type) => (
   `<div class="event__type-item">
       <input
-        id="event-type-${type}-1"
+        id="event-type-${type}"
         class="event__type-input visually-hidden"
         type="radio"
         name="event-type"
@@ -13,7 +14,7 @@ const createTripFormTypesGroupItem = (type) => (
       />
       <label
         class="event__type-label event__type-label--${type}"
-        for="event-type-${type}-1">
+        for="event-type-${type}">
             ${capitalizeFirstLetter(type)}
       </label>
     </div>`
@@ -40,7 +41,7 @@ const createTripFormDestinationsListTemplate = (tripDestinations) => (
 );
 
 const createTripFormOffersListTemplate = (point, tripOffers) => {
-  const offersByType = tripOffers.find((offer) => offer.type === point.type).offers;
+  const offersByType = getOffersByType(point.type, tripOffers);
 
   return (
     `${offersByType.length ? `<section class="event__section event__section--offers">
@@ -49,9 +50,9 @@ const createTripFormOffersListTemplate = (point, tripOffers) => {
         <div class="event__available-offers">
           ${offersByType.reduce((result, {id, title, price}) => {
       result += `<div class="event__offer-selector">
-            <input class="event__offer-checkbox visually-hidden" id="event-offer-${point.type}-1" type="checkbox" name="event-offer-${point.type}"
+            <input class="event__offer-checkbox visually-hidden" id="${id}" type="checkbox" name="${id}"
                 ${point.offers.includes(id) ? 'checked' : ''}>
-            <label class="event__offer-label" for="event-offer-luggage-1">
+            <label class="event__offer-label" for="${id}">
                 <span class="event__offer-title">${title}</span>
                 &plus;&euro;&nbsp;
                 <span class="event__offer-price">${price}</span>
@@ -64,14 +65,25 @@ const createTripFormOffersListTemplate = (point, tripOffers) => {
   );
 };
 
-const createTripFormEditTemplate = (point, pointDestination, tripOffers, tripDestinations) => {
+const createTripFormDestinationPictures = (pictures) => (
+  `<div class="event__photos-tape">
+    ${pictures.reduce((result, {src, description}) => {
+    result += `<img class="event__photo" src="${src}" alt="${description}">`;
+    return result;
+  }, '')}
+   </div>`
+);
+
+const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
   const {type, basePrice} = point;
-  const {name = '', description = ''} = pointDestination;
+  const pointDestination = tripDestinations.find((destination) => destination.id === point.destination);
+  const {name = '', description = '', pictures} = pointDestination;
   const calendarDateFrom = humanizeDate(point.dateFrom, DateFormat.DATE_TIME);
   const calendarDateTo = humanizeDate(point.dateTo, DateFormat.DATE_TIME);
   const typesGroup = createTripFormTypesGroupTemplate(tripOffers);
   const destinationsList = createTripFormDestinationsListTemplate(tripDestinations);
   const offersList = createTripFormOffersListTemplate(point, tripOffers);
+  const picturesList = createTripFormDestinationPictures(pictures);
 
   return (
     `<form class="event event--edit" action="#" method="post">
@@ -112,7 +124,7 @@ const createTripFormEditTemplate = (point, pointDestination, tripOffers, tripDes
                   <span class="visually-hidden">Price</span>
                   &euro;
               </label>
-              <input class="event__input event__input--price" id="event-price-1" type="text" name="event-price"
+              <input class="event__input event__input--price" id="event-price-1" type="number" min="0" max="1000000" name="event-price"
                      value="${basePrice}">
           </div>
 
@@ -127,15 +139,16 @@ const createTripFormEditTemplate = (point, pointDestination, tripOffers, tripDes
            <section class="event__section event__section--destination">
                 <h3 class="event__section-title event__section-title--destination">Destination</h3>
                 <p class="event__destination-description">${description}</p>
+                <div class="event__photos-container">
+                   ${picturesList}
+                </div>
            </section>
       </section>
     </form>`
   );
 };
 
-export default class TripFormView extends AbstractView {
-  #point = null;
-  #pointDestination = null;
+export default class TripFormView extends AbstractStatefulView {
   #tripOffers = null;
   #tripDestinations = null;
 
@@ -144,21 +157,26 @@ export default class TripFormView extends AbstractView {
 
   constructor({pointsInfo, onFormSubmit, onHideClick}) {
     super();
-    this.#point = pointsInfo.point ?? POINT_EMPTY;
-    this.#pointDestination = pointsInfo.pointDestination ?? POINT_EMPTY.destination;
+    this._setState(pointsInfo.point ? TripFormView.parsePointToState(pointsInfo.point) : TripFormView.parsePointToState(POINT_EMPTY));
     this.#tripOffers = pointsInfo.tripOffers;
     this.#tripDestinations = pointsInfo.tripDestinations;
     this.#onHideClick = onHideClick;
     this.#onFormSubmit = onFormSubmit;
 
+    this._restoreHandlers();
+  }
+
+  _restoreHandlers() {
     this.element.addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#hideClickHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
+    this.element.querySelector('[name="event-destination"]').addEventListener('change', this.#onDestinationChange);
+    this.element.querySelector('[name="event-price"]').addEventListener('input', this.#onPriceChange);
   }
 
   get template() {
     return createTripFormEditTemplate(
-      this.#point,
-      this.#pointDestination,
+      this._state,
       this.#tripOffers,
       this.#tripDestinations
     );
@@ -166,11 +184,50 @@ export default class TripFormView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#onFormSubmit();
+    this.#onFormSubmit(TripFormView.parseStateToPoint(this._state));
   };
 
   #hideClickHandler = (evt) => {
     evt.preventDefault();
     this.#onHideClick();
   };
+
+  #onTypeChange = (evt) => {
+    const selectedType = evt.target.value;
+
+    this.updateElement({
+      type: selectedType,
+      offers: getOffersByType(selectedType, this.#tripOffers)
+    });
+  };
+
+  #onDestinationChange = (evt) => {
+    const selectedDestination = evt.target.value;
+    const getDestinationbyName = this.#tripDestinations.find((destination) => destination.name === selectedDestination.trim());
+
+    this.updateElement({
+      destination: getDestinationbyName ? getDestinationbyName.id : this._state.destination
+    });
+  };
+
+  #onPriceChange = (evt) =>{
+    evt.preventDefault();
+    this._setState({
+      basePrice: evt.target.value
+    });
+  };
+
+  reset(pointInfo) {
+    this.updateElement(
+      TripFormView.parsePointToState(pointInfo.point)
+    );
+  }
+
+  static parsePointToState(point) {
+    return {...point};
+  }
+
+  static parseStateToPoint(state) {
+    return {...state};
+  }
 }

@@ -46,7 +46,6 @@ export default class PointPresenter {
     this.#tripPointEditComponent = new TripFormView({
       pointsInfo: {
         point: this.#pointInfo.point,
-        pointDestination: this.#pointInfo.pointDestination,
         tripOffers: this.#tripOffers,
         tripDestinations: this.#tripDestinations
       },
@@ -74,6 +73,7 @@ export default class PointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#tripPointEditComponent.reset(this.#pointInfo);
       this.#replaceFormToPoint();
       document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
@@ -99,6 +99,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#tripPointEditComponent.reset(this.#pointInfo);
       this.#replaceFormToPoint();
       document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
@@ -119,6 +120,7 @@ export default class PointPresenter {
   };
 
   #onHideClick = () => {
+    this.#tripPointEditComponent.reset(this.#pointInfo);
     this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
