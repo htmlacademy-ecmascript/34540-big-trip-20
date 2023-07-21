@@ -171,6 +171,7 @@ export default class TripFormView extends AbstractStatefulView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#hideClickHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
     this.element.querySelector('[name="event-destination"]').addEventListener('change', this.#onDestinationChange);
+    this.element.querySelector('[name="event-price"]').addEventListener('input', this.#onPriceChange);
   }
 
   get template() {
@@ -206,6 +207,13 @@ export default class TripFormView extends AbstractStatefulView {
 
     this.updateElement({
       destination: getDestinationbyName ? getDestinationbyName.id : this._state.destination
+    });
+  };
+
+  #onPriceChange = (evt) =>{
+    evt.preventDefault();
+    this._setState({
+      basePrice: evt.target.value,
     });
   };
 
