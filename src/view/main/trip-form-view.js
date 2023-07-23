@@ -203,14 +203,14 @@ export default class TripFormView extends AbstractStatefulView {
 
   #onDestinationChange = (evt) => {
     const selectedDestination = evt.target.value;
-    const getDestinationbyName = this.#tripDestinations.find((destination) => destination.name === selectedDestination.trim());
+    const getDestinationbyName = this.#tripDestinations.find(({name}) => name === selectedDestination.trim());
 
     this.updateElement({
       destination: getDestinationbyName ? getDestinationbyName.id : this._state.destination
     });
   };
 
-  #onPriceChange = (evt) =>{
+  #onPriceChange = (evt) => {
     evt.preventDefault();
     this._setState({
       basePrice: evt.target.value
