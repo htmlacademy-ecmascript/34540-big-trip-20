@@ -175,6 +175,11 @@ export default class TripFormView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
     this.element.querySelector('[name="event-destination"]').addEventListener('change', this.#onDestinationChange);
     this.element.querySelector('[name="event-price"]').addEventListener('input', this.#onPriceChange);
+
+    const $offerBlock = this.element.querySelector('.event__available-offers');
+    if ($offerBlock) {
+      $offerBlock.addEventListener('change', this.#onOfferClick);
+    }
   }
 
   get template() {
@@ -216,7 +221,16 @@ export default class TripFormView extends AbstractStatefulView {
   #onPriceChange = (evt) => {
     evt.preventDefault();
     this._setState({
-      basePrice: evt.target.value
+      basePrice: evt.target.valueAsNumber
+    });
+  };
+
+  #onOfferClick = (evt) => {
+    evt.preventDefault();
+
+    const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+    this._setState({
+      offers: checkedOffers.map((offer) => offer.id)
     });
   };
 
