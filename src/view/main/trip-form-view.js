@@ -3,6 +3,9 @@ import {capitalizeFirstLetter, humanizeDate} from '../../utils/common.js';
 import {POINT_EMPTY, DateFormat} from '../../const.js';
 import {getOffersByType} from '../../utils/point.js';
 
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+
 const createTripFormTypesGroupItem = (type) => (
   `<div class="event__type-item">
       <input
