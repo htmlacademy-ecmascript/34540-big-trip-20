@@ -3,6 +3,9 @@ import {capitalizeFirstLetter, humanizeDate} from '../../utils/common.js';
 import {POINT_EMPTY, DateFormat} from '../../const.js';
 import {getOffersByType} from '../../utils/point.js';
 
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+
 const createTripFormTypesGroupItem = (type) => (
   `<div class="event__type-item">
       <input
@@ -32,7 +35,7 @@ const createTripFormTypesGroupTemplate = (tripOffers) => (
 );
 
 const createTripFormDestinationsListTemplate = (tripDestinations) => (
-  `<datalist id="destination-list-1">
+  `<datalist id="destination-list">
     ${tripDestinations.reduce((result, {name}) => {
     result += `<option value="${name}"></option>`;
     return result;
@@ -89,11 +92,11 @@ const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
     `<form class="event event--edit" action="#" method="post">
       <header class="event__header">
           <div class="event__type-wrapper">
-              <label class="event__type event__type-btn" for="event-type-toggle-1">
+              <label class="event__type event__type-btn" for="event-type-toggle">
                   <span class="visually-hidden">Choose event type</span>
                   <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
               </label>
-              <input class="event__type-toggle visually-hidden" id="event-type-toggle-1" type="checkbox">
+              <input class="event__type-toggle visually-hidden" id="event-type-toggle" type="checkbox">
 
               <div class="event__type-list">
                   ${typesGroup}
@@ -101,30 +104,30 @@ const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
           </div>
 
           <div class="event__field-group event__field-group--destination">
-              <label class="event__label event__type-output" for="event-destination-1">
+              <label class="event__label event__type-output" for="event-destination">
                   ${type}
               </label>
-              <input class="event__input event__input--destination" id="event-destination-1" type="text"
-                     name="event-destination" value="${name}" list="destination-list-1">
+              <input class="event__input event__input--destination" id="event-destination" type="text"
+                     name="event-destination" value="${name}" list="destination-list">
               ${destinationsList}
           </div>
 
           <div class="event__field-group event__field-group--time">
-              <label class="visually-hidden" for="event-start-time-1">From</label>
-              <input class="event__input event__input--time" id="event-start-time-1" type="text" name="event-start-time"
+              <label class="visually-hidden" for="event-start-time">From</label>
+              <input class="event__input event__input--time" id="event-start-time" type="text" name="event-start-time"
                      value="${calendarDateFrom}">
               &mdash;
-              <label class="visually-hidden" for="event-end-time-1">To</label>
-              <input class="event__input event__input--time" id="event-end-time-1" type="text" name="event-end-time"
+              <label class="visually-hidden" for="event-end-time">To</label>
+              <input class="event__input event__input--time" id="event-end-time" type="text" name="event-end-time"
                      value="${calendarDateTo}">
           </div>
 
           <div class="event__field-group event__field-group--price">
-              <label class="event__label" for="event-price-1">
+              <label class="event__label" for="event-price">
                   <span class="visually-hidden">Price</span>
                   &euro;
               </label>
-              <input class="event__input event__input--price" id="event-price-1" type="number" min="0" max="1000000" name="event-price"
+              <input class="event__input event__input--price" id="event-price" type="number" min="0" max="1000000" name="event-price"
                      value="${basePrice}">
           </div>
 
@@ -151,6 +154,8 @@ const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
 export default class TripFormView extends AbstractStatefulView {
   #tripOffers = null;
   #tripDestinations = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   #onHideClick = null;
   #onFormSubmit = null;
@@ -172,6 +177,13 @@ export default class TripFormView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
     this.element.querySelector('[name="event-destination"]').addEventListener('change', this.#onDestinationChange);
     this.element.querySelector('[name="event-price"]').addEventListener('input', this.#onPriceChange);
+
+    const $offerBlock = this.element.querySelector('.event__available-offers');
+    if ($offerBlock) {
+      $offerBlock.addEventListener('change', this.#onOfferClick);
+    }
+
+    this.#setDatepicker();
   }
 
   get template() {
@@ -179,6 +191,40 @@ export default class TripFormView extends AbstractStatefulView {
       this._state,
       this.#tripOffers,
       this.#tripDestinations
+    );
+  }
+
+  #setDatepicker() {
+    const [$dateFrom, $dateTo] = this.element.querySelectorAll('.event__input--time');
+
+    this.#datepickerFrom = flatpickr(
+      $dateFrom,
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
+        enableTime: true,
+        locale: {
+          firstDayOfWeek: 1
+        },
+        'time_24hr': true,
+        onClose: this.#onDateFromChange
+      },
+    );
+
+    this.#datepickerTo = flatpickr(
+      $dateTo,
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
+        enableTime: true,
+        locale: {
+          firstDayOfWeek: 1
+        },
+        'time_24hr': true,
+        onClose: this.#onDateToChange
+      },
     );
   }
 
@@ -203,17 +249,41 @@ export default class TripFormView extends AbstractStatefulView {
 
   #onDestinationChange = (evt) => {
     const selectedDestination = evt.target.value;
-    const getDestinationbyName = this.#tripDestinations.find((destination) => destination.name === selectedDestination.trim());
+    const getDestinationbyName = this.#tripDestinations.find(({name}) => name === selectedDestination.trim());
 
     this.updateElement({
       destination: getDestinationbyName ? getDestinationbyName.id : this._state.destination
     });
   };
 
-  #onPriceChange = (evt) =>{
-    evt.preventDefault();
+  #onDateFromChange = ([userDate]) => {
     this._setState({
-      basePrice: evt.target.value
+      dateFrom: userDate,
+    });
+    this.#datepickerTo.set('minDate', this._state.dateFrom);
+  };
+
+  #onDateToChange = ([userDate]) => {
+    this._setState({
+      dateTo: userDate,
+    });
+    this.#datepickerFrom.set('maxDate', this._state.dateTo);
+  };
+
+  #onPriceChange = (evt) => {
+    evt.preventDefault();
+
+    this._setState({
+      basePrice: evt.target.valueAsNumber
+    });
+  };
+
+  #onOfferClick = (evt) => {
+    evt.preventDefault();
+
+    const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+    this._setState({
+      offers: checkedOffers.map((offer) => offer.id)
     });
   };
 
@@ -221,6 +291,20 @@ export default class TripFormView extends AbstractStatefulView {
     this.updateElement(
       TripFormView.parsePointToState(pointInfo.point)
     );
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
   }
 
   static parsePointToState(point) {
