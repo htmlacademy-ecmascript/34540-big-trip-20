@@ -40,6 +40,10 @@ export default class MainPresenter {
     this.#renderTrip();
   }
 
+  get points() {
+    return this.#tripsModel.points;
+  }
+
   #onSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
       return;

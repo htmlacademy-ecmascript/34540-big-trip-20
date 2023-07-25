@@ -1,9 +1,10 @@
+import Observable from '../framework/observable.js';
 import {getPoints} from '../mock/points.js';
 import {generateDestinations} from '../mock/destinations.js';
 import {generateOffers} from '../mock/offers.js';
 import {POINT_COUNT} from '../const.js';
 
-export default class TripsModel {
+export default class TripsModel extends Observable {
   #points = getPoints().length ? this.#generatePoints() : [];
   #destinations = generateDestinations();
   #offers = generateOffers();
