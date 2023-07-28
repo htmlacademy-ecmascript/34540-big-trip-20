@@ -1,4 +1,5 @@
 import {render, replace, remove} from '../framework/render.js';
+import {UserAction, UpdateType} from '../const.js';
 
 import TripListContainerItemView from '../view/main/trip-list-container-item-view.js';
 import TripPointView from '../view/main/trip-point-view.js';
@@ -106,7 +107,10 @@ export default class PointPresenter {
   };
 
   #onFavoriteClick = () => {
-    this.#onPointChange({...this.#pointInfo.point, isFavorite: !this.#pointInfo.point.isFavorite});
+    this.#onPointChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      {...this.#pointInfo.point, isFavorite: !this.#pointInfo.point.isFavorite});
   };
 
   #onEditClick = () => {
