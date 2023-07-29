@@ -157,22 +157,25 @@ export default class TripFormView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  #onHideClick = null;
   #onFormSubmit = null;
+  #onFormDelete = null;
+  #onHideClick = null;
 
-  constructor({pointsInfo, onFormSubmit, onHideClick}) {
+  constructor({pointsInfo, onFormSubmit, onFormDelete, onHideClick}) {
     super();
     this._setState(pointsInfo.point ? TripFormView.parsePointToState(pointsInfo.point) : TripFormView.parsePointToState(POINT_EMPTY));
     this.#tripOffers = pointsInfo.tripOffers;
     this.#tripDestinations = pointsInfo.tripDestinations;
-    this.#onHideClick = onHideClick;
     this.#onFormSubmit = onFormSubmit;
+    this.#onFormDelete = onFormDelete;
+    this.#onHideClick = onHideClick;
 
     this._restoreHandlers();
   }
 
   _restoreHandlers() {
     this.element.addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteClickHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#hideClickHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
     this.element.querySelector('[name="event-destination"]').addEventListener('change', this.#onDestinationChange);
@@ -231,6 +234,11 @@ export default class TripFormView extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#onFormSubmit(TripFormView.parseStateToPoint(this._state));
+  };
+
+  #deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onFormDelete();
   };
 
   #hideClickHandler = (evt) => {

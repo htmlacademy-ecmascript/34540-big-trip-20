@@ -87,14 +87,15 @@ export default class MainPresenter {
         this.#renderTrip();
         break;
       case UpdateType.MAJOR:
-        this.#clearTrip();
-        this.#renderTrip({resetSortType: true});
+        this.#clearTrip({resetSortType: true});
+        this.#renderTrip();
         break;
     }
   };
 
   #renderTrip() {
     if (!this.#tripsModel.points.length) {
+      this.#clearSort();
       this.#renderNoPoints();
       return;
     }
@@ -108,10 +109,13 @@ export default class MainPresenter {
   }
 
   #renderSort() {
+    if (this.#sortComponent) {
+      return;
+    }
+
     this.#sortComponent = new TripSortView({
       onSortTypeChange: this.#onSortTypeChange
     });
-
     render(this.#sortComponent, this.#tripPointsContainer);
   }
 
@@ -149,5 +153,9 @@ export default class MainPresenter {
     if (resetSortType) {
       this.#currentSortType = SortType.DAY;
     }
+  }
+
+  #clearSort(){
+    remove(this.#sortComponent);
   }
 }

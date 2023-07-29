@@ -51,6 +51,7 @@ export default class PointPresenter {
         tripDestinations: this.#tripDestinations
       },
       onFormSubmit: this.#onFormSubmit,
+      onFormDelete: this.#onFormDelete,
       onHideClick: this.#onHideClick
     });
 
@@ -110,7 +111,8 @@ export default class PointPresenter {
     this.#onPointChange(
       UserAction.UPDATE_POINT,
       UpdateType.PATCH,
-      {...this.#pointInfo.point, isFavorite: !this.#pointInfo.point.isFavorite});
+      {...this.#pointInfo.point, isFavorite: !this.#pointInfo.point.isFavorite}
+    );
   };
 
   #onEditClick = () => {
@@ -119,6 +121,17 @@ export default class PointPresenter {
   };
 
   #onFormSubmit = () => {
+    this.#replaceFormToPoint();
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
+
+  #onFormDelete = () => {
+    this.#onPointChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      {...this.#pointInfo.point}
+    );
+
     this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
