@@ -14,17 +14,17 @@ export default class MainPresenter {
   #tripEventsListContainer = new TripListContainerView();
   #tripPointsContainer = null;
 
-  #tripsModel = null;
+  #tripModel = null;
 
   #currentSortType = SortType.DAY;
 
   #pointPresenters = new Map();
 
-  constructor({mainContainer, tripsModel}) {
+  constructor({mainContainer, tripModel}) {
     this.#tripPointsContainer = mainContainer.querySelector('.trip-events');
-    this.#tripsModel = tripsModel;
+    this.#tripModel = tripModel;
 
-    this.#tripsModel.addObserver(this.#handleModelEvent);
+    this.#tripModel.addObserver(this.#handleModelEvent);
   }
 
   init() {
@@ -34,14 +34,14 @@ export default class MainPresenter {
   get points() {
     switch (this.#currentSortType) {
       case SortType.DAY:
-        return [...this.#tripsModel.points].sort(sortPointDay);
+        return [...this.#tripModel.points].sort(sortPointDay);
       case SortType.TIME:
-        return [...this.#tripsModel.points].sort(sortPointTime);
+        return [...this.#tripModel.points].sort(sortPointTime);
       case SortType.PRICE:
-        return [...this.#tripsModel.points].sort(sortPointPrice);
+        return [...this.#tripModel.points].sort(sortPointPrice);
     }
 
-    return this.#tripsModel.points;
+    return this.#tripModel.points;
   }
 
   #onSortTypeChange = (sortType) => {
@@ -62,13 +62,13 @@ export default class MainPresenter {
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#tripsModel.updatePoint(updateType, update);
+        this.#tripModel.updatePoint(updateType, update);
         break;
       case UserAction.ADD_POINT:
-        this.#tripsModel.addPoint(updateType, update);
+        this.#tripModel.addPoint(updateType, update);
         break;
       case UserAction.DELETE_POINT:
-        this.#tripsModel.deletePoint(updateType, update);
+        this.#tripModel.deletePoint(updateType, update);
         break;
     }
   };
@@ -78,8 +78,8 @@ export default class MainPresenter {
       case UpdateType.PATCH:
         this.#pointPresenters.get(data.id).init({
           point: data,
-          pointDestination: this.#tripsModel.getDestinationById(data.destination),
-          pointOffers: this.#tripsModel.getOffersById(data.type, data.offers)
+          pointDestination: this.#tripModel.getDestinationById(data.destination),
+          pointOffers: this.#tripModel.getOffersById(data.type, data.offers)
         });
         break;
       case UpdateType.MINOR:
@@ -94,7 +94,7 @@ export default class MainPresenter {
   };
 
   #renderTrip() {
-    if (!this.#tripsModel.points.length) {
+    if (!this.#tripModel.points.length) {
       this.#clearSort();
       this.#renderNoPoints();
       return;
@@ -124,8 +124,8 @@ export default class MainPresenter {
     for (let i = 0; i < this.points.length; i++) {
       this.#renderPoint({
         point: this.points[i],
-        pointDestination: this.#tripsModel.getDestinationById(this.points[i].destination),
-        pointOffers: this.#tripsModel.getOffersById(this.points[i].type, this.points[i].offers)
+        pointDestination: this.#tripModel.getDestinationById(this.points[i].destination),
+        pointOffers: this.#tripModel.getOffersById(this.points[i].type, this.points[i].offers)
       });
     }
   }
@@ -133,8 +133,8 @@ export default class MainPresenter {
   #renderPoint(pointInfo) {
     const pointPresenter = new PointPresenter({
       pointListContainer: this.#tripEventsListContainer.element,
-      tripOffers: this.#tripsModel.offers,
-      tripDestinations: this.#tripsModel.destinations,
+      tripOffers: this.#tripModel.offers,
+      tripDestinations: this.#tripModel.destinations,
       onPointChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange
     });

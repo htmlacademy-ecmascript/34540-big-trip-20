@@ -6,16 +6,17 @@ import FilterModel from './model/filter-model.js';
 const $siteHeaderElement = document.querySelector('.page-header');
 const $siteMainElement = document.querySelector('.page-main');
 
-const tripsModel = new TripModel();
+const tripModel = new TripModel();
 const filterModel = new FilterModel();
 
 const headerPresenter = new HeaderPresenter({
   headerContainer: $siteHeaderElement,
-  tripsModel
+  tripModel,
+  filterModel
 });
 const mainPresenter = new MainPresenter({
   mainContainer: $siteMainElement,
-  tripsModel
+  tripModel
 });
 
 headerPresenter.init();
