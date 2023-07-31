@@ -31,13 +31,22 @@ const createTripFiltersTemplate = (filters) => (
 
 export default class TripFiltersView extends AbstractView {
   #filters = null;
+  #handleFilterTypeChange = null;
 
-  constructor(filters) {
+  constructor({filters, onFilterTypeChange}) {
     super();
     this.#filters = filters;
+    this.#handleFilterTypeChange = onFilterTypeChange;
+
+    this.element.addEventListener('change', this.#filterTypeChangeHandler);
   }
 
   get template() {
     return createTripFiltersTemplate(this.#filters);
   }
+
+  #filterTypeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFilterTypeChange(evt.target.value);
+  };
 }
