@@ -1,20 +1,20 @@
 import {render, replace, remove} from '../framework/render.js';
 import {filter} from '../utils/filter.js';
-import {FilterType, UpdateType} from '../const.js';
+import {UpdateType} from '../const.js';
 
 import TripFiltersView from '../view/header/trip-filters-view.js';
 
 export default class FilterPresenter {
   #filterContainer = null;
-  #filterModel = null;
   #tripModel = null;
+  #filterModel = null;
 
   #filterComponent = null;
 
-  constructor({filterContainer, filterModel, tripModel}) {
+  constructor({filterContainer, tripModel, filterModel}) {
     this.#filterContainer = filterContainer;
-    this.#filterModel = filterModel;
     this.#tripModel = tripModel;
+    this.#filterModel = filterModel;
 
     this.#tripModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);

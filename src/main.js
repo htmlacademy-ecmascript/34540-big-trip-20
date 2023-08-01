@@ -16,7 +16,8 @@ const headerPresenter = new HeaderPresenter({
 });
 const mainPresenter = new MainPresenter({
   mainContainer: $siteMainElement,
-  tripModel
+  tripModel,
+  filterModel
 });
 
 headerPresenter.init();

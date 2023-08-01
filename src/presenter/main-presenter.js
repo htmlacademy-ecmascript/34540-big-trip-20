@@ -1,11 +1,10 @@
 import {remove, render} from '../framework/render.js';
 import {SortType, UserAction, UpdateType} from '../const.js';
 import {sortPointDay, sortPointTime, sortPointPrice} from '../utils/point.js';
-
+import {filter} from '../utils/filter.js';
 import TripSortView from '../view/main/trip-sort-view.js';
 import TripListContainerView from '../view/main/trip-list-container-view.js';
 import TripListEmptyView from '../view/main/trip-list-empty-view.js';
-
 import PointPresenter from './point-presenter.js';
 
 export default class MainPresenter {
@@ -15,16 +14,19 @@ export default class MainPresenter {
   #tripPointsContainer = null;
 
   #tripModel = null;
+  #filterModel = null;
 
   #currentSortType = SortType.DAY;
 
   #pointPresenters = new Map();
 
-  constructor({mainContainer, tripModel}) {
+  constructor({mainContainer, tripModel, filterModel}) {
     this.#tripPointsContainer = mainContainer.querySelector('.trip-events');
     this.#tripModel = tripModel;
+    this.#filterModel = filterModel;
 
     this.#tripModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   init() {
@@ -32,16 +34,20 @@ export default class MainPresenter {
   }
 
   get points() {
+    const filterType = this.#filterModel.filter;
+    const points = this.#tripModel.points;
+    const filteredPoints = filter[filterType](points);
+
     switch (this.#currentSortType) {
       case SortType.DAY:
-        return [...this.#tripModel.points].sort(sortPointDay);
+        return filteredPoints.sort(sortPointDay);
       case SortType.TIME:
-        return [...this.#tripModel.points].sort(sortPointTime);
+        return filteredPoints.sort(sortPointTime);
       case SortType.PRICE:
-        return [...this.#tripModel.points].sort(sortPointPrice);
+        return filteredPoints.sort(sortPointPrice);
     }
 
-    return this.#tripModel.points;
+    return filteredPoints;
   }
 
   #onSortTypeChange = (sortType) => {
@@ -151,6 +157,8 @@ export default class MainPresenter {
     remove(this.#tripEventsListContainer);
 
     if (resetSortType) {
+      remove(this.#sortComponent);
+      this.#sortComponent = null;
       this.#currentSortType = SortType.DAY;
     }
   }
