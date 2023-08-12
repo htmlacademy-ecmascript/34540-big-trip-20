@@ -4,7 +4,6 @@ import {POINT_EMPTY, DateFormat} from '../../const.js';
 import {getOffersByType} from '../../utils/point.js';
 
 import flatpickr from 'flatpickr';
-import 'flatpickr/dist/flatpickr.min.css';
 
 const createTripFormTypesGroupItem = (type) => (
   `<div class="event__type-item">
@@ -77,16 +76,28 @@ const createTripFormDestinationPictures = (pictures) => (
    </div>`
 );
 
+const createTripFormDestinationTemplate = (description, pictures) => (
+  `<section class="event__section event__section--destination">
+                <h3 class="event__section-title event__section-title--destination">Destination</h3>
+                <p class="event__destination-description">${description}</p>
+                <div class="event__photos-container">
+                    ${createTripFormDestinationPictures(pictures)}
+                </div>
+           </section>`
+);
+
 const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
   const {type, basePrice} = point;
-  const pointDestination = tripDestinations.find((destination) => destination.id === point.destination);
-  const {name = '', description = '', pictures} = pointDestination;
-  const calendarDateFrom = humanizeDate(point.dateFrom, DateFormat.DATE_TIME);
-  const calendarDateTo = humanizeDate(point.dateTo, DateFormat.DATE_TIME);
   const typesGroup = createTripFormTypesGroupTemplate(tripOffers);
   const destinationsList = createTripFormDestinationsListTemplate(tripDestinations);
   const offersList = createTripFormOffersListTemplate(point, tripOffers);
-  const picturesList = createTripFormDestinationPictures(pictures);
+
+  let pointDestination = '';
+  if (point.destination && tripDestinations) {
+    pointDestination = tripDestinations.find((destination) => destination.id === point.destination);
+  }
+  const {name = '', description = '', pictures} = pointDestination;
+  const destinationInfo = description ? createTripFormDestinationTemplate(description, pictures) : '';
 
   return (
     `<form class="event event--edit" action="#" method="post">
@@ -114,12 +125,10 @@ const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
 
           <div class="event__field-group event__field-group--time">
               <label class="visually-hidden" for="event-start-time">From</label>
-              <input class="event__input event__input--time" id="event-start-time" type="text" name="event-start-time"
-                     value="${calendarDateFrom}">
+              <input class="event__input event__input--time" id="event-start-time" type="text" name="event-start-time" value="">
               &mdash;
               <label class="visually-hidden" for="event-end-time">To</label>
-              <input class="event__input event__input--time" id="event-end-time" type="text" name="event-end-time"
-                     value="${calendarDateTo}">
+              <input class="event__input event__input--time" id="event-end-time" type="text" name="event-end-time" value="">
           </div>
 
           <div class="event__field-group event__field-group--price">
@@ -132,44 +141,32 @@ const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
-              <span class="visually-hidden">Open event</span>
-          </button>
+          <button class="event__reset-btn" type="reset">Cancel</button>
       </header>
       <section class="event__details">
           ${offersList}
-           <section class="event__section event__section--destination">
-                <h3 class="event__section-title event__section-title--destination">Destination</h3>
-                <p class="event__destination-description">${description}</p>
-                <div class="event__photos-container">
-                   ${picturesList}
-                </div>
-           </section>
+          ${destinationInfo}
       </section>
     </form>`
   );
 };
 
-export default class TripFormView extends AbstractStatefulView {
+export default class TripFormAddView extends AbstractStatefulView {
   #tripOffers = null;
   #tripDestinations = null;
   #datepickerFrom = null;
   #datepickerTo = null;
-  #formType = null;
 
   #onFormSubmit = null;
-  #onFormDelete = null;
-  #onHideClick = null;
+  #onFormCancel = null;
 
-  constructor({pointsInfo, onFormSubmit, onFormDelete, onHideClick}) {
+  constructor({tripModel, onFormSubmit, onCancelClick}) {
     super();
-    this._setState(pointsInfo.point ? TripFormView.parsePointToState(pointsInfo.point) : TripFormView.parsePointToState(POINT_EMPTY));
-    this.#tripOffers = pointsInfo.tripOffers;
-    this.#tripDestinations = pointsInfo.tripDestinations;
+    this._setState(TripFormAddView.parsePointToState(POINT_EMPTY));
+    this.#tripOffers = tripModel.offers;
+    this.#tripDestinations = tripModel.destinations;
     this.#onFormSubmit = onFormSubmit;
-    this.#onFormDelete = onFormDelete;
-    this.#onHideClick = onHideClick;
+    this.#onFormCancel = onCancelClick;
 
     this._restoreHandlers();
   }
@@ -177,7 +174,6 @@ export default class TripFormView extends AbstractStatefulView {
   _restoreHandlers() {
     this.element.addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteClickHandler);
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#hideClickHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
     this.element.querySelector('[name="event-destination"]').addEventListener('change', this.#onDestinationChange);
     this.element.querySelector('[name="event-price"]').addEventListener('input', this.#onPriceChange);
@@ -234,17 +230,12 @@ export default class TripFormView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#onFormSubmit(TripFormView.parseStateToPoint(this._state));
+    this.#onFormSubmit(TripFormAddView.parseStateToPoint(this._state));
   };
 
   #deleteClickHandler = (evt) => {
     evt.preventDefault();
-    this.#onFormDelete();
-  };
-
-  #hideClickHandler = (evt) => {
-    evt.preventDefault();
-    this.#onHideClick();
+    this.#onFormCancel();
   };
 
   #onTypeChange = (evt) => {
@@ -298,7 +289,7 @@ export default class TripFormView extends AbstractStatefulView {
 
   reset(pointInfo) {
     this.updateElement(
-      TripFormView.parsePointToState(pointInfo.point)
+      TripFormAddView.parsePointToState(pointInfo.point)
     );
   }
 

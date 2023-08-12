@@ -1,4 +1,4 @@
-const POINT_COUNT = 10;
+const POINT_COUNT = 2;
 
 const POINT_EMPTY = {
   id: null,
@@ -6,7 +6,7 @@ const POINT_EMPTY = {
   dateFrom: '',
   dateTo: '',
   destination: '',
-  basePrice: 0,
+  basePrice: '',
   isFavorite: null,
   offers: []
 };
@@ -54,7 +54,6 @@ const UpdateType = {
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
 };
-
 
 export {
   POINT_COUNT,

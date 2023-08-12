@@ -5,6 +5,7 @@ import {filter} from '../utils/filter.js';
 import TripSortView from '../view/main/trip-sort-view.js';
 import TripListContainerView from '../view/main/trip-list-container-view.js';
 import TripListEmptyView from '../view/main/trip-list-empty-view.js';
+import NewPointPresenter from './new-point-presenter.js';
 import PointPresenter from './point-presenter.js';
 
 export default class MainPresenter {
@@ -19,12 +20,20 @@ export default class MainPresenter {
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
 
+  #newPointPresenter = null;
   #pointPresenters = new Map();
 
-  constructor({mainContainer, tripModel, filterModel}) {
+  constructor({mainContainer, tripModel, filterModel, onNewPointDestroy}) {
     this.#tripPointsContainer = mainContainer.querySelector('.trip-events');
     this.#tripModel = tripModel;
     this.#filterModel = filterModel;
+
+    this.#newPointPresenter = new NewPointPresenter({
+      tripEventsListContainer: this.#tripEventsListContainer,
+      tripModel: this.#tripModel,
+      onDataChange: this.#handleViewAction,
+      onDestroy: onNewPointDestroy
+    });
 
     this.#tripModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -32,6 +41,12 @@ export default class MainPresenter {
 
   init() {
     this.#renderTrip();
+  }
+
+  createPoint() {
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newPointPresenter.init();
   }
 
   get points() {
@@ -63,6 +78,7 @@ export default class MainPresenter {
   };
 
   #handleModeChange = () => {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -157,6 +173,7 @@ export default class MainPresenter {
   #clearTrip({resetSortType = false} = {}) {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
+    this.#newPointPresenter.destroy();
 
     remove(this.#tripEventsListContainer);
 
