@@ -1,8 +1,9 @@
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view.js';
-import {capitalizeFirstLetter, humanizeDate} from '../../utils/common.js';
-import {POINT_EMPTY, DateFormat} from '../../const.js';
+import {capitalizeFirstLetter} from '../../utils/common.js';
+import {POINT_EMPTY} from '../../const.js';
 import {getOffersByType} from '../../utils/point.js';
 
+import he from 'he';
 import flatpickr from 'flatpickr';
 
 const createTripFormTypesGroupItem = (type) => (
@@ -55,7 +56,7 @@ const createTripFormOffersListTemplate = (point, tripOffers) => {
             <input class="event__offer-checkbox visually-hidden" id="${id}" type="checkbox" name="${id}"
                 ${point.offers.includes(id) ? 'checked' : ''}>
             <label class="event__offer-label" for="${id}">
-                <span class="event__offer-title">${title}</span>
+                <span class="event__offer-title">${he.encode(title)}</span>
                 &plus;&euro;&nbsp;
                 <span class="event__offer-price">${price}</span>
             </label>
@@ -79,7 +80,7 @@ const createTripFormDestinationPictures = (pictures) => (
 const createTripFormDestinationTemplate = (description, pictures) => (
   `<section class="event__section event__section--destination">
                 <h3 class="event__section-title event__section-title--destination">Destination</h3>
-                <p class="event__destination-description">${description}</p>
+                <p class="event__destination-description">${he.encode(description)}</p>
                 <div class="event__photos-container">
                     ${createTripFormDestinationPictures(pictures)}
                 </div>

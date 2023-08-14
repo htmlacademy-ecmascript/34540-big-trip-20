@@ -3,6 +3,7 @@ import {capitalizeFirstLetter, humanizeDate} from '../../utils/common.js';
 import {POINT_EMPTY, DateFormat} from '../../const.js';
 import {getOffersByType} from '../../utils/point.js';
 
+import he from 'he';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -37,7 +38,7 @@ const createTripFormTypesGroupTemplate = (tripOffers) => (
 const createTripFormDestinationsListTemplate = (tripDestinations) => (
   `<datalist id="destination-list">
     ${tripDestinations.reduce((result, {name}) => {
-    result += `<option value="${name}"></option>`;
+    result += `<option value="${he.encode(name)}"></option>`;
     return result;
   }, '')}
   </datalist>`
@@ -141,7 +142,7 @@ const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
           ${offersList}
            <section class="event__section event__section--destination">
                 <h3 class="event__section-title event__section-title--destination">Destination</h3>
-                <p class="event__destination-description">${description}</p>
+                <p class="event__destination-description">${he.encode(description)}</p>
                 <div class="event__photos-container">
                    ${picturesList}
                 </div>

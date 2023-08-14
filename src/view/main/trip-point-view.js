@@ -1,14 +1,15 @@
 import AbstractView from '../../framework/view/abstract-view.js';
 import {humanizeDate} from '../../utils/common.js';
 import {DateFormat, TimeCalc} from '../../const.js';
+
+import he from 'he';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-
 dayjs.extend(duration);
 
 const createTripPointOfferItem = (title, price) => (
   `<li class="event__offer">
-      <span class="event__offer-title">${title}</span>
+      <span class="event__offer-title">${he.encode(title)}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${price}</span>
   </li>`
@@ -62,7 +63,7 @@ const createTripPointTemplate = (point, pointDestination, pointOffers) => {
       <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="${type}">
       </div>
-      <h3 class="event__title">${pointDestination.name}</h3>
+      <h3 class="event__title">${he.encode(pointDestination.name)}</h3>
       <div class="event__schedule">
           <p class="event__time">
               <time class="event__start-time" datetime="${dateFromFull}T${timeFrom}">${timeFrom}</time>
