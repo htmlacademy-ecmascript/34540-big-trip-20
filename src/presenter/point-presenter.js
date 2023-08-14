@@ -3,7 +3,7 @@ import {UserAction, UpdateType} from '../const.js';
 
 import TripListContainerItemView from '../view/main/trip-list-container-item-view.js';
 import TripPointView from '../view/main/trip-point-view.js';
-import TripFormView from '../view/main/trip-form-view.js';
+import TripFormEditView from '../view/main/trip-form-edit-view.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -44,7 +44,7 @@ export default class PointPresenter {
       onFavoriteClick: this.#onFavoriteClick
     });
 
-    this.#tripPointEditComponent = new TripFormView({
+    this.#tripPointEditComponent = new TripFormEditView({
       pointsInfo: {
         point: this.#pointInfo.point,
         tripOffers: this.#tripOffers,

@@ -151,7 +151,7 @@ const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
   );
 };
 
-export default class TripFormView extends AbstractStatefulView {
+export default class TripFormEditView extends AbstractStatefulView {
   #tripOffers = null;
   #tripDestinations = null;
   #datepickerFrom = null;
@@ -164,7 +164,7 @@ export default class TripFormView extends AbstractStatefulView {
 
   constructor({pointsInfo, onFormSubmit, onFormDelete, onHideClick}) {
     super();
-    this._setState(pointsInfo.point ? TripFormView.parsePointToState(pointsInfo.point) : TripFormView.parsePointToState(POINT_EMPTY));
+    this._setState(pointsInfo.point ? TripFormEditView.parsePointToState(pointsInfo.point) : TripFormEditView.parsePointToState(POINT_EMPTY));
     this.#tripOffers = pointsInfo.tripOffers;
     this.#tripDestinations = pointsInfo.tripDestinations;
     this.#onFormSubmit = onFormSubmit;
@@ -234,7 +234,7 @@ export default class TripFormView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#onFormSubmit(TripFormView.parseStateToPoint(this._state));
+    this.#onFormSubmit(TripFormEditView.parseStateToPoint(this._state));
   };
 
   #deleteClickHandler = (evt) => {
@@ -298,7 +298,7 @@ export default class TripFormView extends AbstractStatefulView {
 
   reset(pointInfo) {
     this.updateElement(
-      TripFormView.parsePointToState(pointInfo.point)
+      TripFormEditView.parsePointToState(pointInfo.point)
     );
   }
 
