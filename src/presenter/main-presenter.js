@@ -47,6 +47,16 @@ export default class MainPresenter {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newPointPresenter.init();
+
+    if (this.#noPointsComponent) {
+      remove(this.#noPointsComponent);
+    }
+  }
+
+  renderNoPointsComponent() {
+    if (!this.points.length) {
+      this.#renderNoPoints();
+    }
   }
 
   get points() {
@@ -132,6 +142,7 @@ export default class MainPresenter {
       filterType: this.#filterType
     });
 
+    render(this.#tripEventsListContainer, this.#tripPointsContainer);
     render(this.#noPointsComponent, this.#tripPointsContainer);
   }
 
@@ -188,7 +199,7 @@ export default class MainPresenter {
     }
   }
 
-  #clearSort(){
+  #clearSort() {
     remove(this.#sortComponent);
   }
 }
