@@ -252,7 +252,7 @@ export default class TripFormView extends AbstractStatefulView {
 
     this.updateElement({
       type: selectedType,
-      offers: getOffersByType(selectedType, this.#tripOffers)
+      offers: []
     });
   };
 
