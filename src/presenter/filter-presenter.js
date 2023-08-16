@@ -26,7 +26,7 @@ export default class FilterPresenter {
     return Object.entries(filter)
       .map(([filterType, filterPoints]) => ({
         type: filterType,
-        hasPoints: filterPoints(points).length > 0
+        hasPoints: filterPoints(points).length
       }));
   }
 
@@ -40,7 +40,7 @@ export default class FilterPresenter {
       onFilterTypeChange: this.#handleFilterTypeChange
     });
 
-    if (prevFilterComponent === null) {
+    if (!prevFilterComponent) {
       render(this.#filterComponent, this.#filterContainer);
       return;
     }

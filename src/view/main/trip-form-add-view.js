@@ -93,10 +93,7 @@ const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
   const destinationsList = createTripFormDestinationsListTemplate(tripDestinations);
   const offersList = createTripFormOffersListTemplate(point, tripOffers);
 
-  let pointDestination = '';
-  if (point.destination && tripDestinations) {
-    pointDestination = tripDestinations.find((destination) => destination.id === point.destination);
-  }
+  const pointDestination = tripDestinations.find((destination) => destination.id === point.destination) ?? '';
   const {name = '', description = '', pictures} = pointDestination;
   const destinationInfo = description ? createTripFormDestinationTemplate(description, pictures) : '';
 
