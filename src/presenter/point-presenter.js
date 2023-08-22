@@ -1,8 +1,9 @@
 import {render, replace, remove} from '../framework/render.js';
+import {UserAction, UpdateType} from '../const.js';
 
 import TripListContainerItemView from '../view/main/trip-list-container-item-view.js';
 import TripPointView from '../view/main/trip-point-view.js';
-import TripFormView from '../view/main/trip-form-view.js';
+import TripFormEditView from '../view/main/trip-form-edit-view.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -43,13 +44,14 @@ export default class PointPresenter {
       onFavoriteClick: this.#onFavoriteClick
     });
 
-    this.#tripPointEditComponent = new TripFormView({
+    this.#tripPointEditComponent = new TripFormEditView({
       pointsInfo: {
         point: this.#pointInfo.point,
         tripOffers: this.#tripOffers,
         tripDestinations: this.#tripDestinations
       },
       onFormSubmit: this.#onFormSubmit,
+      onFormDelete: this.#onFormDelete,
       onHideClick: this.#onHideClick
     });
 
@@ -106,7 +108,11 @@ export default class PointPresenter {
   };
 
   #onFavoriteClick = () => {
-    this.#onPointChange({...this.#pointInfo.point, isFavorite: !this.#pointInfo.point.isFavorite});
+    this.#onPointChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      {...this.#pointInfo.point, isFavorite: !this.#pointInfo.point.isFavorite}
+    );
   };
 
   #onEditClick = () => {
@@ -114,7 +120,24 @@ export default class PointPresenter {
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  #onFormSubmit = () => {
+  #onFormSubmit = (point) => {
+    this.#onPointChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      point
+    );
+
+    this.#replaceFormToPoint();
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
+
+  #onFormDelete = () => {
+    this.#onPointChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      this.#pointInfo.point
+    );
+
     this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };

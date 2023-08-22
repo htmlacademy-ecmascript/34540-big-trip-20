@@ -1,18 +1,24 @@
 import HeaderPresenter from './presenter/header-presenter.js';
 import MainPresenter from './presenter/main-presenter.js';
-import TripsModel from './model/trips-model.js';
+import TripModel from './model/trip-model.js';
+import FilterModel from './model/filter-model.js';
 
 const $siteHeaderElement = document.querySelector('.page-header');
 const $siteMainElement = document.querySelector('.page-main');
 
-const tripsModel = new TripsModel();
+const tripModel = new TripModel();
+const filterModel = new FilterModel();
+
 const headerPresenter = new HeaderPresenter({
   headerContainer: $siteHeaderElement,
-  tripsModel
+  tripModel,
+  filterModel
 });
 const mainPresenter = new MainPresenter({
+  headerContainer: $siteHeaderElement,
   mainContainer: $siteMainElement,
-  tripsModel
+  tripModel,
+  filterModel
 });
 
 headerPresenter.init();

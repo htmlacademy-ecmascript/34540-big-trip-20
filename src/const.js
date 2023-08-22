@@ -1,4 +1,4 @@
-const POINT_COUNT = 10;
+const POINT_COUNT = 2;
 
 const POINT_EMPTY = {
   id: null,
@@ -6,7 +6,7 @@ const POINT_EMPTY = {
   dateFrom: '',
   dateTo: '',
   destination: '',
-  basePrice: 0,
+  basePrice: '',
   isFavorite: null,
   offers: []
 };
@@ -36,11 +36,33 @@ const SortType = {
   PRICE: 'price',
 };
 
+const NoPointsTextType = {
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.FUTURE]: 'There are no future events now',
+  [FilterType.PRESENT]: 'There are no present events now',
+  [FilterType.PAST]: 'There are no past events now'
+};
+
+const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
 export {
   POINT_COUNT,
   POINT_EMPTY,
   DateFormat,
   TimeCalc,
   FilterType,
-  SortType
+  SortType,
+  NoPointsTextType,
+  UserAction,
+  UpdateType
 };
