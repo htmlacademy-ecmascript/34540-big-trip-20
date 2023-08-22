@@ -291,9 +291,15 @@ export default class TripFormEditView extends AbstractStatefulView {
   #onOfferClick = (evt) => {
     evt.preventDefault();
 
-    const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+    let checkedOffers = [...this._state.offers];
+    if (evt.target.checked) {
+      checkedOffers.push(evt.target.name);
+    } else {
+      checkedOffers = checkedOffers.filter((offer) => offer !== evt.target.name);
+    }
+
     this._setState({
-      offers: checkedOffers.map((offer) => offer.id)
+      offers: checkedOffers
     });
   };
 
