@@ -1,8 +1,5 @@
 import Observable from '../framework/observable.js';
-import {getPoints} from '../mock/points.js';
-import {generateDestinations} from '../mock/destinations.js';
-import {generateOffers} from '../mock/offers.js';
-import {POINT_COUNT, UpdateType} from '../const.js';
+import {UpdateType} from '../const.js';
 
 export default class TripModel extends Observable {
   #tripApiService = null;
@@ -14,12 +11,6 @@ export default class TripModel extends Observable {
   constructor({tripApiService}) {
     super();
     this.#tripApiService = tripApiService;
-  }
-
-  #generatePoints() {
-    const points = getPoints().slice(0, POINT_COUNT);
-
-    return points;
   }
 
   get points() {

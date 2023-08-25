@@ -1,5 +1,3 @@
-const POINT_COUNT = 2;
-
 const POINT_EMPTY = {
   id: null,
   type: 'taxi',
@@ -67,7 +65,6 @@ const ApiServiceMethod = {
 };
 
 export {
-  POINT_COUNT,
   POINT_EMPTY,
   DateFormat,
   TimeCalc,
