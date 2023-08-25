@@ -2,23 +2,18 @@ import Observable from '../framework/observable.js';
 import {getPoints} from '../mock/points.js';
 import {generateDestinations} from '../mock/destinations.js';
 import {generateOffers} from '../mock/offers.js';
-import {POINT_COUNT} from '../const.js';
+import {POINT_COUNT, UpdateType} from '../const.js';
 
 export default class TripModel extends Observable {
   #tripApiService = null;
 
-  #points = getPoints().length ? this.#generatePoints() : [];
-  #destinations = generateDestinations();
-  #offers = generateOffers();
+  #points = [];
+  #destinations = [];
+  #offers = [];
 
   constructor({tripApiService}) {
     super();
     this.#tripApiService = tripApiService;
-
-    this.#tripApiService.points.then((points) => {
-      console.log(points);
-      console.log(points.map(this.#adaptToClient));
-    });
   }
 
   #generatePoints() {
@@ -37,6 +32,24 @@ export default class TripModel extends Observable {
 
   get destinations() {
     return this.#destinations;
+  }
+
+  async init() {
+    try {
+      const points = await this.#tripApiService.points;
+      const destinations = await this.#tripApiService.destinations;
+      const offers = await this.#tripApiService.offers;
+
+      this.#points = points.map(this.#adaptToClient);
+      this.#destinations = destinations;
+      this.#offers = offers;
+    } catch (err) {
+      this.#points = [];
+      this.#destinations = [];
+      this.#offers = [];
+    }
+
+    this._notify(UpdateType.INIT);
   }
 
   getOffersById(type, offerIds) {
@@ -90,7 +103,8 @@ export default class TripModel extends Observable {
   }
 
   #adaptToClient(point) {
-    const adaptedPoint = {...point,
+    const adaptedPoint = {
+      ...point,
       dateFrom: point['date_from'] !== null ? new Date(point['date_from']) : point['date_from'],
       dateTo: point['date_to'] !== null ? new Date(point['date_to']) : point['date_to'],
       basePrice: point['base_price'],
@@ -99,7 +113,7 @@ export default class TripModel extends Observable {
 
     delete adaptedPoint['date_from'];
     delete adaptedPoint['date_to'];
-    delete adaptedPoint['basePrice'];
+    delete adaptedPoint['base_price'];
     delete adaptedPoint['is_favorite'];
 
     return adaptedPoint;

@@ -27,3 +27,4 @@ const mainPresenter = new MainPresenter({
 
 headerPresenter.init();
 mainPresenter.init();
+tripModel.init();
