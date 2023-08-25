@@ -55,6 +55,16 @@ const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
+const ApiServiceConnector = {
+  AUTHORIZATION: 'Basic rsfjl2uxok',
+  END_POINT: 'https://20.ecmascript.pages.academy/big-trip'
+};
+
+const ApiServiceMethod = {
+  GET: 'GET',
+  PUT: 'PUT',
+};
+
 export {
   POINT_COUNT,
   POINT_EMPTY,
@@ -64,5 +74,7 @@ export {
   SortType,
   NoPointsTextType,
   UserAction,
-  UpdateType
+  UpdateType,
+  ApiServiceConnector,
+  ApiServiceMethod
 };

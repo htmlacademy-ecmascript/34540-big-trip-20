@@ -5,9 +5,24 @@ import {generateOffers} from '../mock/offers.js';
 import {POINT_COUNT} from '../const.js';
 
 export default class TripModel extends Observable {
+  #tripApiService = null;
+
   #points = getPoints().length ? this.#generatePoints() : [];
   #destinations = generateDestinations();
   #offers = generateOffers();
+
+  constructor({tripApiService}) {
+    super();
+    this.#tripApiService = tripApiService;
+
+    this.#tripApiService.points.then((points) => {
+      console.log(points);
+      // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
+      // а ещё на сервере используется snake_case, а у нас camelCase.
+      // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
+      // Есть вариант получше - паттерн "Адаптер"
+    });
+  }
 
   #generatePoints() {
     const points = getPoints().slice(0, POINT_COUNT);
