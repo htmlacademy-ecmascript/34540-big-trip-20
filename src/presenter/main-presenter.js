@@ -2,8 +2,9 @@ import {render, RenderPosition, remove} from '../framework/render.js';
 import {SortType, FilterType, UserAction, UpdateType} from '../const.js';
 import {sortPointDay, sortPointTime, sortPointPrice} from '../utils/point.js';
 import {filter} from '../utils/filter.js';
-import NewPointPresenter from './new-point-presenter.js';
+import HeaderPresenter from './header-presenter.js';
 import PointPresenter from './point-presenter.js';
+import NewPointPresenter from './new-point-presenter.js';
 import TripSortView from '../view/main/trip-sort-view.js';
 import TripListContainerView from '../view/main/trip-list-container-view.js';
 import TripListEmptyView from '../view/main/trip-list-empty-view.js';
@@ -25,8 +26,9 @@ export default class MainPresenter {
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
 
-  #newPointPresenter = null;
+  #headerPresenter = null;
   #pointPresenters = new Map();
+  #newPointPresenter = null;
 
   #isLoading = true;
 
@@ -48,12 +50,6 @@ export default class MainPresenter {
   }
 
   init() {
-    this.#newPointButtonComponent = new NewPointButtonView({
-      onClick: this.#handleNewPointButtonClick
-    });
-
-    render(this.#newPointButtonComponent, this.#headerContainer.querySelector('.trip-main'));
-
     this.#renderTrip();
   }
 
@@ -84,6 +80,20 @@ export default class MainPresenter {
     this.#clearTrip();
     this.#renderPointsList();
   };
+
+  #createHeader(){
+    this.#headerPresenter = new HeaderPresenter({
+      headerContainer: this.#headerContainer,
+      tripModel: this.#tripModel,
+      filterModel: this.#filterModel
+    });
+    this.#headerPresenter.init();
+
+    this.#newPointButtonComponent = new NewPointButtonView({
+      onClick: this.#handleNewPointButtonClick
+    });
+    render(this.#newPointButtonComponent, this.#headerContainer.querySelector('.trip-main'));
+  }
 
   #createPoint() {
     this.#currentSortType = SortType.DAY;
@@ -129,6 +139,7 @@ export default class MainPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+        this.#createHeader();
         this.#renderTrip();
         break;
       case UpdateType.PATCH:
@@ -141,10 +152,12 @@ export default class MainPresenter {
       case UpdateType.MINOR:
         this.#clearTrip();
         this.#renderTrip();
+        this.#headerPresenter.renderTripInfo();
         break;
       case UpdateType.MAJOR:
         this.#clearTrip({resetSortType: true});
         this.#renderTrip();
+        this.#headerPresenter.renderTripInfo();
         break;
     }
   };
@@ -220,6 +233,7 @@ export default class MainPresenter {
   }
 
   #clearTrip({resetSortType = false} = {}) {
+    this.#headerPresenter.clearTripInfo();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
     this.#newPointPresenter.destroy();
