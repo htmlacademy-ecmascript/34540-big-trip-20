@@ -39,7 +39,7 @@ export default class TripApiService extends ApiService {
     };
 
     delete adaptedPoint.dateFrom;
-    delete adaptedPoint.date_to;
+    delete adaptedPoint.dateTo;
     delete adaptedPoint.basePrice;
     delete adaptedPoint.isFavorite;
 
