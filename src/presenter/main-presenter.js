@@ -1,5 +1,6 @@
 import {render, RenderPosition, remove} from '../framework/render.js';
-import {SortType, FilterType, UserAction, UpdateType} from '../const.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import {UiTimeLimit, SortType, FilterType, UserAction, UpdateType} from '../const.js';
 import {sortPointDay, sortPointTime, sortPointPrice} from '../utils/point.js';
 import {filter} from '../utils/filter.js';
 import HeaderPresenter from './header-presenter.js';
@@ -12,6 +13,11 @@ import NewPointButtonView from '../view/header/new-point-button-view.js';
 import LoadingView from '../view/main/loading-view.js';
 
 export default class MainPresenter {
+  #uiBlocker = new UiBlocker({
+    lowerLimit: UiTimeLimit.LOWER_LIMIT,
+    upperLimit: UiTimeLimit.UPPER_LIMIT
+  });
+
   #newPointButtonComponent = null;
   #sortComponent = null;
   #noPointsComponent = null;
@@ -121,6 +127,8 @@ export default class MainPresenter {
   };
 
   #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_POINT:
         this.#pointPresenters.get(update.id).setSaving();
@@ -147,6 +155,8 @@ export default class MainPresenter {
         }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {

@@ -1,3 +1,8 @@
+const UiTimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
 const POINT_EMPTY = {
   id: null,
   type: 'taxi',
@@ -67,6 +72,7 @@ const ApiServiceMethod = {
 };
 
 export {
+  UiTimeLimit,
   POINT_EMPTY,
   DateFormat,
   TimeCalc,
