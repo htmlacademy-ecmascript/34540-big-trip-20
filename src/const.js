@@ -1,5 +1,3 @@
-const POINT_COUNT = 2;
-
 const POINT_EMPTY = {
   id: null,
   type: 'taxi',
@@ -50,13 +48,23 @@ const UserAction = {
 };
 
 const UpdateType = {
+  INIT: 'INIT',
   PATCH: 'PATCH',
   MINOR: 'MINOR',
-  MAJOR: 'MAJOR',
+  MAJOR: 'MAJOR'
+};
+
+const ApiServiceConnector = {
+  AUTHORIZATION: 'Basic rsfjl2uxok',
+  END_POINT: 'https://20.ecmascript.pages.academy/big-trip'
+};
+
+const ApiServiceMethod = {
+  GET: 'GET',
+  PUT: 'PUT',
 };
 
 export {
-  POINT_COUNT,
   POINT_EMPTY,
   DateFormat,
   TimeCalc,
@@ -64,5 +72,7 @@ export {
   SortType,
   NoPointsTextType,
   UserAction,
-  UpdateType
+  UpdateType,
+  ApiServiceConnector,
+  ApiServiceMethod
 };

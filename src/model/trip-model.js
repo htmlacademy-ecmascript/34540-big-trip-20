@@ -1,18 +1,16 @@
 import Observable from '../framework/observable.js';
-import {getPoints} from '../mock/points.js';
-import {generateDestinations} from '../mock/destinations.js';
-import {generateOffers} from '../mock/offers.js';
-import {POINT_COUNT} from '../const.js';
+import {UpdateType} from '../const.js';
 
 export default class TripModel extends Observable {
-  #points = getPoints().length ? this.#generatePoints() : [];
-  #destinations = generateDestinations();
-  #offers = generateOffers();
+  #tripApiService = null;
 
-  #generatePoints() {
-    const points = getPoints().slice(0, POINT_COUNT);
+  #points = [];
+  #destinations = [];
+  #offers = [];
 
-    return points;
+  constructor({tripApiService}) {
+    super();
+    this.#tripApiService = tripApiService;
   }
 
   get points() {
@@ -27,6 +25,24 @@ export default class TripModel extends Observable {
     return this.#destinations;
   }
 
+  async init() {
+    try {
+      const points = await this.#tripApiService.points;
+      const destinations = await this.#tripApiService.destinations;
+      const offers = await this.#tripApiService.offers;
+
+      this.#points = points.map(this.#adaptToClient);
+      this.#destinations = destinations;
+      this.#offers = offers;
+    } catch (err) {
+      this.#points = [];
+      this.#destinations = [];
+      this.#offers = [];
+    }
+
+    this._notify(UpdateType.INIT);
+  }
+
   getOffersById(type, offerIds) {
     const offersByType = this.#offers.find((offer) => offer.type === type).offers;
 
@@ -37,20 +53,25 @@ export default class TripModel extends Observable {
     return this.#destinations.find((destination) => destination.id === id);
   }
 
-  updatePoint(updateType, update) {
+  async updatePoint(updateType, update) {
     const index = this.#points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting point');
     }
 
-    this.#points = [
-      ...this.#points.slice(0, index),
-      update,
-      ...this.#points.slice(index + 1),
-    ];
-
-    this._notify(updateType, update);
+    try {
+      const response = await this.#tripApiService.updatePoint(update);
+      const updatedPoint = this.#adaptToClient(response);
+      this.#points = [
+        ...this.#points.slice(0, index),
+        updatedPoint,
+        ...this.#points.slice(index + 1),
+      ];
+      this._notify(updateType, updatedPoint);
+    } catch(err) {
+      throw new Error('Can\'t update point');
+    }
   }
 
   addPoint(updateType, update) {
@@ -75,5 +96,22 @@ export default class TripModel extends Observable {
     ];
 
     this._notify(updateType);
+  }
+
+  #adaptToClient(point) {
+    const adaptedPoint = {
+      ...point,
+      dateFrom: point['date_from'] !== null ? new Date(point['date_from']) : point['date_from'],
+      dateTo: point['date_to'] !== null ? new Date(point['date_to']) : point['date_to'],
+      basePrice: point['base_price'],
+      isFavorite: point['is_favorite']
+    };
+
+    delete adaptedPoint['date_from'];
+    delete adaptedPoint['date_to'];
+    delete adaptedPoint['base_price'];
+    delete adaptedPoint['is_favorite'];
+
+    return adaptedPoint;
   }
 }

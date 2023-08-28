@@ -1,4 +1,4 @@
-import {render, RenderPosition} from '../framework/render.js';
+import {render, RenderPosition, remove} from '../framework/render.js';
 import TripInfoView from '../view/header/trip-info-view.js';
 import FilterPresenter from './filter-presenter.js';
 
@@ -8,15 +8,18 @@ export default class HeaderPresenter {
   #filterModel = null;
   #tripPoints = null;
 
+  #tripInfoComponent = null;
+
   constructor({headerContainer, tripModel, filterModel}) {
     this.#container = headerContainer;
     this.#tripModel = tripModel;
     this.#filterModel = filterModel;
-    this.#tripPoints = [...this.#tripModel.points];
   }
 
   init() {
-    this.#renderHeader();
+    this.#tripPoints = [...this.#tripModel.points];
+    this.renderTripInfo();
+    this.#renderTripFilters();
   }
 
   get totalPrice() {
@@ -32,10 +35,16 @@ export default class HeaderPresenter {
     }, 0);
   }
 
-  #renderHeader() {
+  renderTripInfo() {
+    this.#tripPoints = [...this.#tripModel.points];
     if (this.#tripPoints.length) {
-      render(new TripInfoView(this.totalPrice), this.#container.querySelector('.trip-main'), RenderPosition.AFTERBEGIN);
+      this.#tripInfoComponent = new TripInfoView(this.totalPrice);
+      render(this.#tripInfoComponent, this.#container.querySelector('.trip-main'), RenderPosition.AFTERBEGIN);
+    }
+  }
 
+  #renderTripFilters() {
+    if (this.#tripPoints.length) {
       const filterPresenter = new FilterPresenter({
         filterContainer: this.#container.querySelector('.trip-controls__filters'),
         tripModel: this.#tripModel,
@@ -43,5 +52,9 @@ export default class HeaderPresenter {
       });
       filterPresenter.init();
     }
+  }
+
+  clearTripInfo() {
+    remove(this.#tripInfoComponent);
   }
 }
