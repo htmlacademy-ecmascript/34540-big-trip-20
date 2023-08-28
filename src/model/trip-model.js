@@ -27,9 +27,11 @@ export default class TripModel extends Observable {
 
   async init() {
     try {
-      const points = await this.#tripApiService.points;
-      const destinations = await this.#tripApiService.destinations;
-      const offers = await this.#tripApiService.offers;
+      const [points, destinations, offers] = await Promise.all([
+        this.#tripApiService.points,
+        this.#tripApiService.destinations,
+        this.#tripApiService.offers,
+      ]);
 
       this.#points = points.map(this.#adaptToClient);
       this.#destinations = destinations;
