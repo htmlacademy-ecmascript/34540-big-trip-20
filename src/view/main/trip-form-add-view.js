@@ -88,7 +88,7 @@ const createTripFormDestinationTemplate = (description, pictures) => (
 );
 
 const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
-  const {type, basePrice} = point;
+  const {type, basePrice, isDisabled, isSaving} = point;
   const typesGroup = createTripFormTypesGroupTemplate(tripOffers);
   const destinationsList = createTripFormDestinationsListTemplate(tripDestinations);
   const offersList = createTripFormOffersListTemplate(point, tripOffers);
@@ -138,7 +138,9 @@ const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
                      value="${basePrice}">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>
+                ${isSaving ? 'Saving...' : 'Save'}
+          </button>
           <button class="event__reset-btn" type="reset">Cancel</button>
       </header>
       <section class="event__details">
@@ -312,10 +314,19 @@ export default class TripFormAddView extends AbstractStatefulView {
   }
 
   static parsePointToState(point) {
-    return {...point};
+    return {
+      ...point,
+      isDisabled: false,
+      isSaving: false
+    };
   }
 
   static parseStateToPoint(state) {
-    return {...state};
+    const point = {...state};
+
+    delete point.isDisabled;
+    delete point.isSaving;
+
+    return point;
   }
 }

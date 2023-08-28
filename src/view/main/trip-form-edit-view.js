@@ -79,7 +79,7 @@ const createTripFormDestinationPictures = (pictures) => (
 );
 
 const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
-  const {type, basePrice} = point;
+  const {type, basePrice, isDisabled, isSaving, isDeleting} = point;
   const pointDestination = tripDestinations.find((destination) => destination.id === point.destination);
   const {name = '', description = '', pictures} = pointDestination;
   const calendarDateFrom = humanizeDate(point.dateFrom, DateFormat.DATE_TIME);
@@ -132,8 +132,12 @@ const createTripFormEditTemplate = (point, tripOffers, tripDestinations) => {
                      value="${basePrice}">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>
+               ${isSaving ? 'Saving...' : 'Save'}
+          </button>
+          <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>
+                ${isDeleting ? 'Deleting...' : 'Delete'}
+          </button>
           <button class="event__rollup-btn" type="button">
               <span class="visually-hidden">Open event</span>
           </button>
@@ -324,10 +328,21 @@ export default class TripFormEditView extends AbstractStatefulView {
   }
 
   static parsePointToState(point) {
-    return {...point};
+    return {
+      ...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false
+    };
   }
 
   static parseStateToPoint(state) {
-    return {...state};
+    const point = {...state};
+
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
+    return point;
   }
 }

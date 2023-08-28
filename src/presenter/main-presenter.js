@@ -81,7 +81,7 @@ export default class MainPresenter {
     this.#renderPointsList();
   };
 
-  #createHeader(){
+  #createHeader() {
     this.#headerPresenter = new HeaderPresenter({
       headerContainer: this.#headerContainer,
       tripModel: this.#tripModel,
@@ -120,16 +120,31 @@ export default class MainPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#tripModel.updatePoint(updateType, update);
+        this.#pointPresenters.get(update.id).setSaving();
+        try {
+          await this.#tripModel.updatePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenters.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_POINT:
-        this.#tripModel.addPoint(updateType, update);
+        this.#newPointPresenter.setSaving();
+        try {
+          await this.#tripModel.addPoint(updateType, update);
+        } catch (err) {
+          this.#newPointPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_POINT:
-        this.#tripModel.deletePoint(updateType, update);
+        this.#pointPresenters.get(update.id).setDeleting();
+        try {
+          await this.#tripModel.deletePoint(updateType, update);
+        } catch (err) {
+          this.#newPointPresenter.get(update.id).setAborting();
+        }
         break;
     }
   };

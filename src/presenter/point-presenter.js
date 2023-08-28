@@ -66,7 +66,8 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#tripPointEditComponent, prevTripPointEditComponent);
+      replace(this.#tripPointComponent, prevTripPointEditComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevTripPointComponent);
@@ -85,6 +86,41 @@ export default class PointPresenter {
     remove(this.#tripPointComponent);
     remove(this.#tripPointEditComponent);
     remove(this.#pointListContainerItem);
+  }
+
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#tripPointEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#tripPointEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#tripPointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#tripPointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    this.#tripPointEditComponent.shake(resetFormState);
   }
 
   #replacePointToForm() {
@@ -127,7 +163,6 @@ export default class PointPresenter {
       point
     );
 
-    this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
@@ -138,7 +173,6 @@ export default class PointPresenter {
       this.#pointInfo.point
     );
 
-    this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
