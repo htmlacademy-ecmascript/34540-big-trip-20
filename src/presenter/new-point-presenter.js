@@ -1,7 +1,6 @@
 import {remove, render, RenderPosition} from '../framework/render.js';
 import TripListContainerItemView from '../view/main/trip-list-container-item-view.js';
 import TripFormAddView from '../view/main/trip-form-add-view.js';
-import {nanoid} from 'nanoid';
 import {UserAction, UpdateType} from '../const.js';
 
 export default class NewPointPresenter {
@@ -56,7 +55,7 @@ export default class NewPointPresenter {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {...point, id: nanoid()}
+      {...point, isFavorite: false}
     );
     this.destroy();
   };

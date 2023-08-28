@@ -62,6 +62,8 @@ const ApiServiceConnector = {
 const ApiServiceMethod = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE'
 };
 
 export {
