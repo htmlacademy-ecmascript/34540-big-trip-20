@@ -1,3 +1,8 @@
+const UiTimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
 const POINT_EMPTY = {
   id: null,
   type: 'taxi',
@@ -62,9 +67,12 @@ const ApiServiceConnector = {
 const ApiServiceMethod = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE'
 };
 
 export {
+  UiTimeLimit,
   POINT_EMPTY,
   DateFormat,
   TimeCalc,
