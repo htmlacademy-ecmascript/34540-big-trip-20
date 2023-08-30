@@ -1,25 +1,29 @@
 import AbstractView from '../../framework/view/abstract-view.js';
 
-const createTripInfoTemplate = (totalPrice) => (
+const createTripInfoTemplate = (tripRouteTitle, tripRouteDates, tripTotalPrice) => (
   `<section class="trip-main__trip-info  trip-info">
         <div class="trip-info__main">
-            <h1 class="trip-info__title">Amsterdam &mdash; Chamonix &mdash; Geneva</h1>
-            <p class="trip-info__dates">Mar 18&nbsp;&mdash;&nbsp;20</p>
+            <h1 class="trip-info__title">${tripRouteTitle}</h1>
+            <p class="trip-info__dates">${tripRouteDates}</p>
         </div>
 
-        <p class="trip-info__cost">Total: &euro;&nbsp;<span class="trip-info__cost-value">${totalPrice}</span></p>
+        <p class="trip-info__cost">Total: &euro;&nbsp;<span class="trip-info__cost-value">${tripTotalPrice}</span></p>
     </section>`
 );
 
 export default class TripInfoView extends AbstractView {
-  #totalPrice = 0;
+  #tripRouteTitle = '';
+  #tripRouteDates = '';
+  #tripTotalPrice = 0;
 
-  constructor(totalPrice) {
+  constructor({tripRouteTitle, tripRouteDates, tripTotalPrice}) {
     super();
-    this.#totalPrice = totalPrice;
+    this.#tripRouteTitle = tripRouteTitle;
+    this.#tripRouteDates = tripRouteDates;
+    this.#tripTotalPrice = tripTotalPrice;
   }
 
   get template() {
-    return createTripInfoTemplate(this.#totalPrice);
+    return createTripInfoTemplate(this.#tripRouteTitle, this.#tripRouteDates, this.#tripTotalPrice);
   }
 }

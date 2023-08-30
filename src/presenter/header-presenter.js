@@ -22,7 +22,7 @@ export default class HeaderPresenter {
     this.#renderTripFilters();
   }
 
-  get totalPrice() {
+  get #tripTotalPrice() {
     return this.#tripPoints.reduce((totalPrice, {type, basePrice, offers}) => {
       totalPrice += basePrice;
 
@@ -38,7 +38,11 @@ export default class HeaderPresenter {
   renderTripInfo() {
     this.#tripPoints = [...this.#tripModel.points];
     if (this.#tripPoints.length) {
-      this.#tripInfoComponent = new TripInfoView(this.totalPrice);
+      this.#tripInfoComponent = new TripInfoView({
+        tripRouteTitle: 'Amsterdam &mdash; Chamonix &mdash; Geneva',
+        tripRouteDates: 'Mar 18&nbsp;&mdash;&nbsp;20',
+        tripTotalPrice: this.#tripTotalPrice
+      });
       render(this.#tripInfoComponent, this.#container.querySelector('.trip-main'), RenderPosition.AFTERBEGIN);
     }
   }
