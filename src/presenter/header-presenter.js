@@ -2,14 +2,16 @@ import {render, RenderPosition, remove} from '../framework/render.js';
 import TripInfoView from '../view/header/trip-info-view.js';
 import FilterPresenter from './filter-presenter.js';
 import {filter} from '../utils/filter.js';
-import {FilterType} from '../const.js';
+import {FilterType, DateFormat} from '../const.js';
 import {sortPointDay} from '../utils/point.js';
+import {humanizeDate} from '../utils/common.js';
 
 export default class HeaderPresenter {
   #container = null;
   #tripModel = null;
   #filterModel = null;
   #tripPoints = null;
+  #filteredPoints = null;
 
   #tripInfoComponent = null;
 
@@ -26,15 +28,22 @@ export default class HeaderPresenter {
   }
 
   get #tripRouteTitle() {
-    const filteredPoints = filter[FilterType.EVERYTHING](this.#tripPoints).sort(sortPointDay);
     if (this.#tripPoints.length > 3) {
-      return `${this.#tripModel.getDestinationById(filteredPoints[0].destination).name} &mdash;...&mdash; ${this.#tripModel.getDestinationById(filteredPoints[this.#tripPoints.length - 1].destination).name}`;
+      return `${this.#tripModel.getDestinationById(this.#filteredPoints[0].destination).name} &mdash;...&mdash; ${this.#tripModel.getDestinationById(this.#filteredPoints[this.#tripPoints.length - 1].destination).name}`;
     }
 
     return this.#tripPoints.reduce((tripRouteTitle, {destination}) => {
       tripRouteTitle += `${this.#tripModel.getDestinationById(destination).name} &mdash; `;
       return tripRouteTitle;
     }, '').slice(0, -9);
+  }
+
+  get #tripRouteDates() {
+    if (this.#tripPoints.length > 1) {
+      return `${humanizeDate(this.#filteredPoints[0].dateFrom, DateFormat.DATE_SHORT)}&nbsp;&mdash;&nbsp;${humanizeDate(this.#filteredPoints[this.#tripPoints.length - 1].dateFrom, DateFormat.DATE_SHORT)}`;
+    }
+
+    return `${humanizeDate(this.#filteredPoints[0].dateFrom, DateFormat.DATE_SHORT)}`;
   }
 
   get #tripTotalPrice() {
@@ -52,11 +61,12 @@ export default class HeaderPresenter {
 
   renderTripInfo() {
     this.#tripPoints = [...this.#tripModel.points];
+    this.#filteredPoints = filter[FilterType.EVERYTHING](this.#tripPoints).sort(sortPointDay);
+
     if (this.#tripPoints.length) {
       this.#tripInfoComponent = new TripInfoView({
-        //tripRouteTitle: 'Amsterdam &mdash; Chamonix &mdash; Geneva',
         tripRouteTitle: this.#tripRouteTitle,
-        tripRouteDates: 'Mar 18&nbsp;&mdash;&nbsp;20',
+        tripRouteDates: this.#tripRouteDates,
         tripTotalPrice: this.#tripTotalPrice
       });
       render(this.#tripInfoComponent, this.#container.querySelector('.trip-main'), RenderPosition.AFTERBEGIN);
