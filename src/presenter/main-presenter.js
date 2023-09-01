@@ -130,20 +130,20 @@ export default class MainPresenter {
     this.#uiBlocker.block();
 
     switch (actionType) {
-      case UserAction.UPDATE_POINT:
-        this.#pointPresenters.get(update.id).setSaving();
-        try {
-          await this.#tripModel.updatePoint(updateType, update);
-        } catch (err) {
-          this.#pointPresenters.get(update.id).setAborting();
-        }
-        break;
       case UserAction.ADD_POINT:
         this.#newPointPresenter.setSaving();
         try {
           await this.#tripModel.addPoint(updateType, update);
         } catch (err) {
           this.#newPointPresenter.setAborting();
+        }
+        break;
+      case UserAction.UPDATE_POINT:
+        this.#pointPresenters.get(update.id).setSaving();
+        try {
+          await this.#tripModel.updatePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenters.get(update.id).setAborting();
         }
         break;
       case UserAction.DELETE_POINT:
